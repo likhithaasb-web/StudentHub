@@ -7,6 +7,8 @@ import {
   INITIAL_EXAMS,
   INITIAL_NOTES,
   INITIAL_ATTENDANCE,
+  INITIAL_ATTENDANCE_SUBJECTS,
+  INITIAL_ATTENDANCE_RECORDS,
   INITIAL_STUDY_SESSIONS,
 } from '../utils/initialData';
 import { getDaysRemaining } from '../utils/dateUtils';
@@ -272,63 +274,220 @@ export const AppProvider = ({ children }) => {
     });
   };
 
-  // 7. Attendance State
-  const [attendance, setAttendance] = useState(() => storage.get('attendance', INITIAL_ATTENDANCE));
+  // 7. Personal Attendance Tracker State (Subject & Class-Record Driven)
+  const [attendanceSubjects, setAttendanceSubjects] = useState(() => {
+    const stored = storage.get('attendance_subjects');
+    if (Array.isArray(stored) && stored.length > 0) return stored;
+    return INITIAL_ATTENDANCE_SUBJECTS;
+  });
 
+  const [attendanceRecords, setAttendanceRecords] = useState(() => {
+    const stored = storage.get('attendance_records');
+    if (Array.isArray(stored)) return stored;
+    return INITIAL_ATTENDANCE_RECORDS;
+  });
+
+  // Calculate subject-wise attendance automatically from individual class records
+  const attendance = useMemo(() => {
+    return attendanceSubjects.map((sub) => {
+      const records = attendanceRecords.filter((r) => r.subject === sub.name);
+      const attended = records.filter((r) => r.status === 'Present').length;
+      const absent = records.filter((r) => r.status === 'Absent').length;
+      const held = attended + absent;
+      const percentage = calculateAttendancePercentage(attended, held);
+      return {
+        id: sub.id,
+        subject: sub.name,
+        fullName: sub.fullName || sub.name,
+        color: sub.color || 'var(--primary)',
+        held,
+        attended,
+        absent,
+        percentage,
+      };
+    });
+  }, [attendanceSubjects, attendanceRecords]);
+
+  // Synchronize computed summary into storage for external listeners
+  useEffect(() => {
+    storage.set('attendance', attendance);
+    storage.set('attendance_subjects', attendanceSubjects);
+    storage.set('attendance_records', attendanceRecords);
+  }, [attendance, attendanceSubjects, attendanceRecords]);
+
+  // Subject Management (Add, Edit, Delete)
   const addAttendanceSubject = (subjectData) => {
+    const name = (subjectData.name || subjectData.subject || '').trim().toUpperCase();
+    if (!name) return null;
+
+    // Check duplicate
+    const exists = attendanceSubjects.some((s) => s.name.toUpperCase() === name);
+    if (exists) return null;
+
     const newSubject = {
-      id: generateId(),
-      subject: subjectData.subject.trim(),
-      held: Math.max(0, parseInt(subjectData.held, 10) || 0),
-      attended: Math.max(0, parseInt(subjectData.attended, 10) || 0),
+      id: `sub-${name.toLowerCase().replace(/[^a-z0-9]/g, '') || generateId()}`,
+      name,
+      fullName: (subjectData.fullName || subjectData.name || name).trim(),
+      color: subjectData.color || '#DFD6AE',
     };
-    if (newSubject.attended > newSubject.held) {
-      newSubject.held = newSubject.attended;
-    }
-    setAttendance((prev) => {
+
+    setAttendanceSubjects((prev) => {
       const updated = [...prev, newSubject];
-      storage.set('attendance', updated);
+      storage.set('attendance_subjects', updated);
       return updated;
     });
+
     return newSubject;
   };
 
   const updateAttendanceSubject = (id, subjectData) => {
-    setAttendance((prev) => {
-      const updated = prev.map((item) => {
-        if (item.id === id) {
-          const held = Math.max(0, parseInt(subjectData.held, 10) || 0);
-          const attended = Math.min(held, Math.max(0, parseInt(subjectData.attended, 10) || 0));
-          return { ...item, ...subjectData, held, attended };
+    const newName = (subjectData.name || subjectData.subject || '').trim().toUpperCase();
+    setAttendanceSubjects((prev) => {
+      let oldName = null;
+      const updated = prev.map((s) => {
+        if (s.id === id) {
+          oldName = s.name;
+          return {
+            ...s,
+            name: newName || s.name,
+            fullName: subjectData.fullName !== undefined ? subjectData.fullName.trim() : s.fullName,
+            color: subjectData.color || s.color,
+          };
         }
-        return item;
+        return s;
       });
-      storage.set('attendance', updated);
-      return updated;
-    });
-  };
+      storage.set('attendance_subjects', updated);
 
-  const adjustAttendanceRecord = (id, attendedDelta, heldDelta) => {
-    setAttendance((prev) => {
-      const updated = prev.map((item) => {
-        if (item.id === id) {
-          const newHeld = Math.max(0, item.held + heldDelta);
-          const newAttended = Math.min(newHeld, Math.max(0, item.attended + attendedDelta));
-          return { ...item, held: newHeld, attended: newAttended };
-        }
-        return item;
-      });
-      storage.set('attendance', updated);
+      // If subject name changed, cascade update to all attendance records
+      if (oldName && newName && oldName !== newName) {
+        setAttendanceRecords((prevRecs) => {
+          const updatedRecs = prevRecs.map((r) =>
+            r.subject === oldName ? { ...r, subject: newName } : r
+          );
+          storage.set('attendance_records', updatedRecs);
+          return updatedRecs;
+        });
+      }
+
       return updated;
     });
   };
 
   const deleteAttendanceSubject = (id) => {
-    setAttendance((prev) => {
-      const updated = prev.filter((a) => a.id !== id);
-      storage.set('attendance', updated);
+    let deletedName = null;
+    setAttendanceSubjects((prev) => {
+      const target = prev.find((s) => s.id === id);
+      if (target) deletedName = target.name;
+      const updated = prev.filter((s) => s.id !== id);
+      storage.set('attendance_subjects', updated);
       return updated;
     });
+
+    if (deletedName) {
+      setAttendanceRecords((prev) => {
+        const updated = prev.filter((r) => r.subject !== deletedName);
+        storage.set('attendance_records', updated);
+        return updated;
+      });
+    }
+  };
+
+  // Class-by-Class Attendance Records (Add, Edit, Delete, Toggle Status)
+  const addAttendanceRecord = (recordData) => {
+    const newRecord = {
+      id: generateId(),
+      subject: (recordData.subject || '').trim(),
+      date: recordData.date || new Date().toISOString().split('T')[0],
+      status: recordData.status === 'Absent' ? 'Absent' : 'Present',
+      notes: (recordData.notes || '').trim(),
+      createdAt: new Date().toISOString(),
+    };
+
+    setAttendanceRecords((prev) => {
+      const updated = [newRecord, ...prev];
+      storage.set('attendance_records', updated);
+      return updated;
+    });
+
+    return newRecord;
+  };
+
+  const updateAttendanceRecord = (id, updatedData) => {
+    setAttendanceRecords((prev) => {
+      const updated = prev.map((rec) => {
+        if (rec.id === id) {
+          return {
+            ...rec,
+            ...updatedData,
+            status: updatedData.status === 'Absent' ? 'Absent' : 'Present',
+            notes: updatedData.notes !== undefined ? updatedData.notes.trim() : rec.notes,
+          };
+        }
+        return rec;
+      });
+      storage.set('attendance_records', updated);
+      return updated;
+    });
+  };
+
+  const deleteAttendanceRecord = (id) => {
+    setAttendanceRecords((prev) => {
+      const updated = prev.filter((rec) => rec.id !== id);
+      storage.set('attendance_records', updated);
+      return updated;
+    });
+  };
+
+  const toggleAttendanceRecordStatus = (id) => {
+    setAttendanceRecords((prev) => {
+      const updated = prev.map((rec) => {
+        if (rec.id === id) {
+          return {
+            ...rec,
+            status: rec.status === 'Present' ? 'Absent' : 'Present',
+          };
+        }
+        return rec;
+      });
+      storage.set('attendance_records', updated);
+      return updated;
+    });
+  };
+
+  // Convenience helper to quickly record today's class
+  const quickMarkAttendance = (subjectName, status = 'Present', notes = '') => {
+    const todayStr = new Date().toISOString().split('T')[0];
+    return addAttendanceRecord({
+      subject: subjectName,
+      date: todayStr,
+      status,
+      notes: notes || `Quick-logged ${status.toLowerCase()} on ${todayStr}`,
+    });
+  };
+
+  // Legacy fallback compatibility
+  const adjustAttendanceRecord = (id, attendedDelta, heldDelta) => {
+    const targetSub = attendanceSubjects.find((s) => s.id === id || s.name === id);
+    const subjectName = targetSub ? targetSub.name : id;
+    if (attendedDelta > 0) {
+      quickMarkAttendance(subjectName, 'Present');
+    } else if (heldDelta > 0 && attendedDelta === 0) {
+      quickMarkAttendance(subjectName, 'Absent');
+    }
+  };
+
+  const resetAttendanceToSample = () => {
+    setAttendanceSubjects(INITIAL_ATTENDANCE_SUBJECTS);
+    setAttendanceRecords(INITIAL_ATTENDANCE_RECORDS);
+    storage.set('attendance_subjects', INITIAL_ATTENDANCE_SUBJECTS);
+    storage.set('attendance_records', INITIAL_ATTENDANCE_RECORDS);
+  };
+
+  const clearAttendanceData = () => {
+    setAttendanceSubjects([]);
+    setAttendanceRecords([]);
+    storage.set('attendance_subjects', []);
+    storage.set('attendance_records', []);
   };
 
   // 8. Study Sessions State
@@ -483,7 +642,8 @@ export const AppProvider = ({ children }) => {
     setTimetable(INITIAL_TIMETABLE);
     setExams(INITIAL_EXAMS);
     setNotes(INITIAL_NOTES);
-    setAttendance(INITIAL_ATTENDANCE);
+    setAttendanceSubjects(INITIAL_ATTENDANCE_SUBJECTS);
+    setAttendanceRecords(INITIAL_ATTENDANCE_RECORDS);
     setStudySessions(INITIAL_STUDY_SESSIONS);
     setDismissedNotifications([]);
     storage.set('settings', INITIAL_SETTINGS);
@@ -491,6 +651,8 @@ export const AppProvider = ({ children }) => {
     storage.set('timetable', INITIAL_TIMETABLE);
     storage.set('exams', INITIAL_EXAMS);
     storage.set('notes', INITIAL_NOTES);
+    storage.set('attendance_subjects', INITIAL_ATTENDANCE_SUBJECTS);
+    storage.set('attendance_records', INITIAL_ATTENDANCE_RECORDS);
     storage.set('attendance', INITIAL_ATTENDANCE);
     storage.set('studySessions', INITIAL_STUDY_SESSIONS);
   };
@@ -509,7 +671,8 @@ export const AppProvider = ({ children }) => {
     setTimetable([]);
     setExams([]);
     setNotes([]);
-    setAttendance([]);
+    setAttendanceSubjects([]);
+    setAttendanceRecords([]);
     setStudySessions([]);
     setDismissedNotifications([]);
     storage.set('settings', blankSettings);
@@ -546,11 +709,20 @@ export const AppProvider = ({ children }) => {
         updateNote,
         deleteNote,
         togglePinNote,
+        attendanceSubjects,
+        attendanceRecords,
         attendance,
         addAttendanceSubject,
         updateAttendanceSubject,
-        adjustAttendanceRecord,
         deleteAttendanceSubject,
+        addAttendanceRecord,
+        updateAttendanceRecord,
+        deleteAttendanceRecord,
+        toggleAttendanceRecordStatus,
+        quickMarkAttendance,
+        adjustAttendanceRecord,
+        resetAttendanceToSample,
+        clearAttendanceData,
         studySessions,
         addStudySession,
         deleteStudySession,

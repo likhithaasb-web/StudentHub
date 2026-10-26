@@ -446,3 +446,5 @@ select {
     display: none;
   }
 }
+
+@media (max-width: 768px) { .attendance-calendar-grid { grid-template-columns: 1fr !important; } }

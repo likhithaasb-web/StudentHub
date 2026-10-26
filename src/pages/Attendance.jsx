@@ -1,49 +1,102 @@
 import React, { useState } from 'react';
 import { useApp } from '../context/AppContext';
 import SubjectAttendanceCard from '../components/attendance/SubjectAttendanceCard';
-import AttendanceFormModal from '../components/attendance/AttendanceFormModal';
+import RecordClassModal from '../components/attendance/RecordClassModal';
+import SubjectFormModal from '../components/attendance/SubjectFormModal';
+import AttendanceHistoryTable from '../components/attendance/AttendanceHistoryTable';
+import AttendanceCalendarView from '../components/attendance/AttendanceCalendarView';
 import ConfirmDialog from '../components/common/ConfirmDialog';
 import EmptyState from '../components/common/EmptyState';
 import {
   calculateOverallAttendance,
+  calculateClassesNeeded,
 } from '../utils/attendanceUtils';
 import {
   Percent,
   Plus,
   AlertTriangle,
   CheckCircle2,
-  HelpCircle,
+  Calendar,
+  ListFilter,
+  LayoutGrid,
+  RotateCcw,
+  ShieldCheck,
   TrendingUp,
+  Check,
+  X,
+  BookOpen,
 } from 'lucide-react';
 
 const Attendance = () => {
   const {
+    attendanceSubjects,
+    attendanceRecords,
     attendance,
     settings,
     updateSettings,
     addAttendanceSubject,
     updateAttendanceSubject,
-    adjustAttendanceRecord,
     deleteAttendanceSubject,
+    addAttendanceRecord,
+    updateAttendanceRecord,
+    deleteAttendanceRecord,
+    toggleAttendanceRecordStatus,
+    quickMarkAttendance,
+    resetAttendanceToSample,
   } = useApp();
 
   const targetPercentage = settings.targetAttendance || 75;
 
-  const [isFormOpen, setIsFormOpen] = useState(false);
-  const [editingSubject, setEditingSubject] = useState(null);
-  const [subjectToDelete, setSubjectToDelete] = useState(null);
+  // Active View Tab: 'grid' (Subject Overview) | 'history' (Date-wise logbook) | 'calendar' (Monthly matrix)
+  const [activeTab, setActiveTab] = useState('grid');
 
+  // Modals state
+  const [isRecordModalOpen, setIsRecordModalOpen] = useState(false);
+  const [recordModalConfig, setRecordModalConfig] = useState({
+    initialSubject: '',
+    initialDate: '',
+    recordToEdit: null,
+  });
+
+  const [isSubjectModalOpen, setIsSubjectModalOpen] = useState(false);
+  const [subjectToEdit, setSubjectToEdit] = useState(null);
+
+  // Confirmation dialogs
+  const [subjectToDelete, setSubjectToDelete] = useState(null);
+  const [recordToDelete, setRecordToDelete] = useState(null);
+  const [showResetConfirm, setShowResetConfirm] = useState(false);
+
+  // Overall statistics
   const overall = calculateOverallAttendance(attendance);
   const isOverallSafe = overall.percentage >= targetPercentage;
 
+  // Subjects below minimum threshold
   const belowTargetSubjects = attendance.filter((a) => {
     if (a.held === 0) return false;
-    return (a.attended / a.held) * 100 < targetPercentage;
+    return a.percentage < targetPercentage;
   });
 
+  // Handlers
+  const handleOpenRecordModal = (subjectName = '', dateStr = '', record = null) => {
+    setRecordModalConfig({
+      initialSubject: subjectName,
+      initialDate: dateStr,
+      recordToEdit: record,
+    });
+    setIsRecordModalOpen(true);
+  };
+
+  const handleSaveRecord = (formData) => {
+    if (recordModalConfig.recordToEdit) {
+      updateAttendanceRecord(recordModalConfig.recordToEdit.id, formData);
+    } else {
+      addAttendanceRecord(formData);
+    }
+  };
+
   const handleSaveSubject = (formData) => {
-    if (editingSubject) {
-      updateAttendanceSubject(editingSubject.id, formData);
+    if (subjectToEdit) {
+      updateAttendanceSubject(subjectToEdit.id, formData);
     } else {
       addAttendanceSubject(formData);
     }
@@ -59,40 +112,68 @@ const Attendance = () => {
       {/* Page Header */}
       <div className="page-header">
         <div>
-          <h1 className="page-header-title">Attendance Tracker & Calculator</h1>
+          <div style={{ display: 'flex', alignItems: 'center', gap: '0.5rem', marginBottom: '0.25rem' }}>
+            <h1 className="page-header-title">Personal Attendance Tracker</h1>
+            <span
+              className="badge badge-purple"
+              style={{ fontSize: '0.72rem', textTransform: 'uppercase', letterSpacing: '0.04em' }}
+            >
+              Self-Managed Logbook
+            </span>
+          </div>
           <p className="page-header-subtitle">
-            Track class presence, calculate shortage margins, and forecast required sessions.
+            Log class presence, track subject shortages, and calculate consecutive classes required to reach your {targetPercentage}% target.
           </p>
         </div>
-        <button
-          onClick={() => {
-            setEditingSubject(null);
-            setIsFormOpen(true);
-          }}
-          className="btn btn-primary"
-        >
-          <Plus size={18} /> Add Subject
-        </button>
+
+        {/* Action Buttons */}
+        <div style={{ display: 'flex', alignItems: 'center', gap: '0.6rem', flexWrap: 'wrap' }}>
+          <button
+            onClick={() => handleOpenRecordModal()}
+            className="btn btn-primary"
+            title="Record class attendance with date and notes"
+          >
+            <Plus size={16} /> Record Class
+          </button>
+
+          <button
+            onClick={() => {
+              setSubjectToEdit(null);
+              setIsSubjectModalOpen(true);
+            }}
+            className="btn btn-secondary"
+            title="Add a new academic subject"
+          >
+            <BookOpen size={16} /> Add Subject
+          </button>
+
+          <button
+            onClick={() => setShowResetConfirm(true)}
+            className="btn btn-secondary"
+            title="Reset to default subjects and sample records (CN, MFEF, TRAINING, OT, API, ML)"
+            style={{ fontSize: '0.8rem' }}
+          >
+            <RotateCcw size={14} /> Demo Data
+          </button>
+        </div>
       </div>
 
-      {/* College Notice Disclaimer Banner */}
+      {/* Student Personal Records Disclaimer Banner */}
       <div
+        className="card"
         style={{
-          padding: '0.75rem 1.15rem',
-          borderRadius: 'var(--radius-md)',
-          backgroundColor: 'var(--bg-card)',
+          padding: '0.9rem 1.25rem',
+          backgroundColor: 'rgba(39, 66, 69, 0.45)',
           border: '1px solid var(--border-subtle)',
-          fontSize: '0.8rem',
-          color: 'var(--text-secondary)',
           display: 'flex',
           alignItems: 'center',
-          gap: '0.6rem',
+          gap: '0.85rem',
         }}
       >
-        <HelpCircle size={16} style={{ color: 'var(--primary)', flexShrink: 0 }} />
-        <span>
-          <strong>Student Guidance:</strong> All attendance percentages and attendance requirements are calculated mathematically based on your recorded counts. For semester hall tickets, always cross-reference your college's official portal.
-        </span>
+        <ShieldCheck size={22} style={{ color: 'var(--primary)', flexShrink: 0 }} />
+        <div style={{ fontSize: '0.825rem', color: 'var(--text-secondary)', lineHeight: 1.5 }}>
+          <strong style={{ color: 'var(--text-primary)' }}>Personal Student Logbook:</strong> All attendance counts, percentages, and shortage forecast calculations are derived automatically from your personal class entries. This tool is designed for student productivity and is not officially verified or synchronized with university ERP portals. Always verify with your college administration before semester exams.
+        </div>
       </div>
 
       {/* Aggregate Overview Card */}
@@ -111,8 +192,8 @@ const Attendance = () => {
         <div style={{ display: 'flex', alignItems: 'center', gap: '1.25rem' }}>
           <div
             style={{
-              width: 56,
-              height: 56,
+              width: 58,
+              height: 58,
               borderRadius: 'var(--radius-lg)',
               backgroundColor: isOverallSafe ? 'var(--success-bg)' : 'var(--danger-bg)',
               color: isOverallSafe ? 'var(--success)' : 'var(--danger)',
@@ -122,18 +203,18 @@ const Attendance = () => {
               flexShrink: 0,
             }}
           >
-            <TrendingUp size={28} />
+            <TrendingUp size={30} />
           </div>
 
           <div>
-            <span style={{ fontSize: '0.85rem', color: 'var(--text-muted)', fontWeight: 600 }}>
-              Aggregate Attendance
+            <span style={{ fontSize: '0.825rem', color: 'var(--text-muted)', fontWeight: 600 }}>
+              Overall Cumulative Attendance
             </span>
-            <div style={{ fontSize: '2.25rem', fontWeight: 800, color: 'var(--text-primary)', lineHeight: 1.1 }}>
+            <div style={{ fontSize: '2.35rem', fontWeight: 800, color: 'var(--text-primary)', lineHeight: 1.1 }}>
               {overall.percentage}%
             </div>
             <div style={{ fontSize: '0.825rem', color: 'var(--text-secondary)', marginTop: 4 }}>
-              {overall.totalAttended} of {overall.totalHeld} total classes attended across {attendance.length} subjects
+              <strong>{overall.totalAttended}</strong> attended / <strong>{overall.totalHeld}</strong> held across {attendance.length} subjects (<strong>{overall.totalAbsent}</strong> absent)
             </div>
           </div>
         </div>
@@ -152,10 +233,10 @@ const Attendance = () => {
         >
           <div>
             <div style={{ fontSize: '0.8rem', fontWeight: 600, color: 'var(--text-primary)' }}>
-              College Target Threshold
+              Minimum Attendance Target
             </div>
             <div style={{ fontSize: '0.72rem', color: 'var(--text-muted)' }}>
-              Adjust target criterion
+              Shortage threshold (default 75%)
             </div>
           </div>
           <div style={{ display: 'flex', alignItems: 'center', gap: '0.35rem' }}>
@@ -178,76 +259,173 @@ const Attendance = () => {
         </div>
       </div>
 
-      {/* Warning Alert if any subject below target */}
+      {/* Shortage Warning Banner (if any subject is below target) */}
       {belowTargetSubjects.length > 0 && (
         <div
           style={{
-            padding: '0.85rem 1.25rem',
+            padding: '0.95rem 1.25rem',
             borderRadius: 'var(--radius-md)',
             backgroundColor: 'var(--danger-bg)',
             border: '1px solid var(--danger-border)',
             display: 'flex',
-            alignItems: 'center',
-            gap: '0.75rem',
+            alignItems: 'flex-start',
+            gap: '0.85rem',
             color: 'var(--danger)',
             fontSize: '0.875rem',
+            lineHeight: 1.5,
           }}
         >
-          <AlertTriangle size={20} style={{ flexShrink: 0 }} />
-          <span>
-            Attention: <strong>{belowTargetSubjects.length} {belowTargetSubjects.length === 1 ? 'subject has' : 'subjects have'}</strong> attendance below your {targetPercentage}% requirement! Check the cards below for consecutive classes needed.
-          </span>
+          <AlertTriangle size={22} style={{ flexShrink: 0, marginTop: 2 }} />
+          <div>
+            <div style={{ fontWeight: 700, marginBottom: '0.25rem' }}>
+              Attendance Shortage Warning: {belowTargetSubjects.length}{' '}
+              {belowTargetSubjects.length === 1 ? 'subject is' : 'subjects are'} below your {targetPercentage}% requirement!
+            </div>
+            <div style={{ display: 'flex', flexDirection: 'column', gap: '0.25rem' }}>
+              {belowTargetSubjects.map((sub) => {
+                const needed = calculateClassesNeeded(sub.attended, sub.held, targetPercentage);
+                return (
+                  <div key={sub.id} style={{ fontSize: '0.825rem', color: 'var(--text-primary)' }}>
+                    • <strong>{sub.subject}</strong> ({sub.percentage}%): {needed.message}
+                  </div>
+                );
+              })}
+            </div>
+          </div>
         </div>
       )}
 
-      {/* Subjects Grid */}
-      {attendance.length === 0 ? (
-        <EmptyState
-          icon={Percent}
-          title="No subjects tracked yet"
-          description="Add your registered subjects to track your lecture attendance and prevent exam hall ticket shortages."
-          actionLabel="Add Your First Subject"
-          onAction={() => {
-            setEditingSubject(null);
-            setIsFormOpen(true);
-          }}
-        />
-      ) : (
-        <div
-          style={{
-            display: 'grid',
-            gridTemplateColumns: 'repeat(auto-fit, minmax(320px, 1fr))',
-            gap: '1.25rem',
-          }}
-        >
-          {attendance.map((item) => (
-            <SubjectAttendanceCard
-              key={item.id}
-              item={item}
-              targetPercentage={targetPercentage}
-              onAdjust={adjustAttendanceRecord}
-              onEdit={(s) => {
-                setEditingSubject(s);
-                setIsFormOpen(true);
-              }}
-              onDelete={(s) => setSubjectToDelete(s)}
-            />
-          ))}
-        </div>
-      )}
-
-      {/* Subject Modal */}
-      <AttendanceFormModal
-        isOpen={isFormOpen}
-        onClose={() => {
-          setIsFormOpen(false);
-          setEditingSubject(null);
+      {/* View Switcher Tabs */}
+      <div
+        style={{
+          display: 'flex',
+          alignItems: 'center',
+          gap: '0.5rem',
+          borderBottom: '1px solid var(--border-subtle)',
+          paddingBottom: '0.5rem',
         }}
-        onSave={handleSaveSubject}
-        subjectToEdit={editingSubject}
+      >
+        <button
+          onClick={() => setActiveTab('grid')}
+          className={`btn ${activeTab === 'grid' ? 'btn-primary' : 'btn-secondary'} btn-sm`}
+          style={{ gap: '0.4rem', fontSize: '0.825rem' }}
+        >
+          <LayoutGrid size={15} /> Subject Overview ({attendance.length})
+        </button>
+
+        <button
+          onClick={() => setActiveTab('history')}
+          className={`btn ${activeTab === 'history' ? 'btn-primary' : 'btn-secondary'} btn-sm`}
+          style={{ gap: '0.4rem', fontSize: '0.825rem' }}
+        >
+          <ListFilter size={15} /> Date-wise History & Logbook ({attendanceRecords.length})
+        </button>
+
+        <button
+          onClick={() => setActiveTab('calendar')}
+          className={`btn ${activeTab === 'calendar' ? 'btn-primary' : 'btn-secondary'} btn-sm`}
+          style={{ gap: '0.4rem', fontSize: '0.825rem' }}
+        >
+          <Calendar size={15} /> Monthly Calendar View
+        </button>
+      </div>
+
+      {/* Tab 1: Subject Cards Grid */}
+      {activeTab === 'grid' && (
+        <>
+          {attendance.length === 0 ? (
+            <EmptyState
+              icon={Percent}
+              title="No subjects tracked yet"
+              description="Add your enrolled subjects (e.g. CN, MFEF, TRAINING, OT, API, ML) or load demo data to start logging class attendance."
+              actionLabel="Add Your First Subject"
+              onAction={() => {
+                setSubjectToEdit(null);
+                setIsSubjectModalOpen(true);
+              }}
+              secondaryActionLabel="Load Demo Subjects & History"
+              onSecondaryAction={resetAttendanceToSample}
+            />
+          ) : (
+            <div
+              style={{
+                display: 'grid',
+                gridTemplateColumns: 'repeat(auto-fit, minmax(320px, 1fr))',
+                gap: '1.25rem',
+              }}
+            >
+              {attendance.map((item) => (
+                <SubjectAttendanceCard
+                  key={item.id}
+                  item={item}
+                  targetPercentage={targetPercentage}
+                  onQuickMark={(subjectName, status) => {
+                    quickMarkAttendance(subjectName, status);
+                  }}
+                  onOpenRecordModal={(subjectName) => {
+                    handleOpenRecordModal(subjectName);
+                  }}
+                  onEdit={(sub) => {
+                    setSubjectToEdit(sub);
+                    setIsSubjectModalOpen(true);
+                  }}
+                  onDelete={(sub) => setSubjectToDelete(sub)}
+                />
+              ))}
+            </div>
+          )}
+        </>
+      )}
+
+      {/* Tab 2: Date-wise History Table */}
+      {activeTab === 'history' && (
+        <AttendanceHistoryTable
+          records={attendanceRecords}
+          subjects={attendanceSubjects}
+          onToggleStatus={(id) => toggleAttendanceRecordStatus(id)}
+          onEditRecord={(rec) => handleOpenRecordModal(rec.subject, rec.date, rec)}
+          onDeleteRecord={(rec) => setRecordToDelete(rec)}
+        />
+      )}
+
+      {/* Tab 3: Monthly Calendar View */}
+      {activeTab === 'calendar' && (
+        <AttendanceCalendarView
+          records={attendanceRecords}
+          subjects={attendanceSubjects}
+          onOpenRecordModal={(subjectName, dateStr) => handleOpenRecordModal(subjectName, dateStr)}
+          onToggleStatus={(id) => toggleAttendanceRecordStatus(id)}
+          onEditRecord={(rec) => handleOpenRecordModal(rec.subject, rec.date, rec)}
+          onDeleteRecord={(rec) => setRecordToDelete(rec)}
+        />
+      )}
+
+      {/* Record Class Attendance Modal */}
+      <RecordClassModal
+        isOpen={isRecordModalOpen}
+        onClose={() => {
+          setIsRecordModalOpen(false);
+          setRecordModalConfig({ initialSubject: '', initialDate: '', recordToEdit: null });
+        }}
+        onSave={handleSaveRecord}
+        subjects={attendanceSubjects}
+        initialSubject={recordModalConfig.initialSubject}
+        initialDate={recordModalConfig.initialDate}
+        recordToEdit={recordModalConfig.recordToEdit}
       />
 
-      {/* Delete Confirmation */}
+      {/* Subject Management Modal */}
+      <SubjectFormModal
+        isOpen={isSubjectModalOpen}
+        onClose={() => {
+          setIsSubjectModalOpen(false);
+          setSubjectToEdit(null);
+        }}
+        onSave={handleSaveSubject}
+        subjectToEdit={subjectToEdit}
+      />
+
+      {/* Confirm Subject Deletion */}
       <ConfirmDialog
         isOpen={Boolean(subjectToDelete)}
         onClose={() => setSubjectToDelete(null)}
@@ -257,9 +435,37 @@ const Attendance = () => {
             setSubjectToDelete(null);
           }
         }}
-        title="Delete Subject Attendance"
-        message={`Are you sure you want to stop tracking attendance for "${subjectToDelete?.subject}"?`}
+        title="Delete Subject & Records"
+        message={`Are you sure you want to stop tracking "${subjectToDelete?.subject || subjectToDelete?.name}"? All associated daily attendance records will be removed.`}
         confirmText="Delete Subject"
+      />
+
+      {/* Confirm Record Deletion */}
+      <ConfirmDialog
+        isOpen={Boolean(recordToDelete)}
+        onClose={() => setRecordToDelete(null)}
+        onConfirm={() => {
+          if (recordToDelete) {
+            deleteAttendanceRecord(recordToDelete.id);
+            setRecordToDelete(null);
+          }
+        }}
+        title="Delete Attendance Entry"
+        message={`Are you sure you want to delete the ${recordToDelete?.status} record for ${recordToDelete?.subject} on ${recordToDelete?.date}?`}
+        confirmText="Delete Entry"
+      />
+
+      {/* Confirm Reset to Demo Data */}
+      <ConfirmDialog
+        isOpen={showResetConfirm}
+        onClose={() => setShowResetConfirm(false)}
+        onConfirm={() => {
+          resetAttendanceToSample();
+          setShowResetConfirm(false);
+        }}
+        title="Load Demo Attendance Data"
+        message="This will reload the realistic demo data for the 6 core subjects: CN, MFEF, TRAINING, OT, API, ML with complete past class attendance history."
+        confirmText="Load Demo Data"
       />
     </div>
   );

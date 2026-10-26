@@ -7,6 +7,8 @@ const EmptyState = ({
   description,
   actionLabel,
   onAction,
+  secondaryActionLabel,
+  onSecondaryAction,
 }) => {
   return (
     <div
@@ -42,15 +44,22 @@ const EmptyState = ({
       <h3 style={{ fontSize: '1.15rem', marginBottom: '0.4rem', color: 'var(--text-primary)' }}>
         {title}
       </h3>
-      <p style={{ maxWidth: 380, fontSize: '0.9rem', marginBottom: '1.25rem', color: 'var(--text-secondary)' }}>
+      <p style={{ maxWidth: 420, fontSize: '0.9rem', marginBottom: '1.25rem', color: 'var(--text-secondary)', lineHeight: 1.5 }}>
         {description}
       </p>
-      {actionLabel && onAction && (
-        <button type="button" className="btn btn-primary" onClick={onAction}>
-          <Plus size={16} />
-          {actionLabel}
-        </button>
-      )}
+      <div style={{ display: 'flex', alignItems: 'center', gap: '0.75rem', flexWrap: 'wrap', justifyContent: 'center' }}>
+        {actionLabel && onAction && (
+          <button type="button" className="btn btn-primary" onClick={onAction}>
+            <Plus size={16} />
+            {actionLabel}
+          </button>
+        )}
+        {secondaryActionLabel && onSecondaryAction && (
+          <button type="button" className="btn btn-secondary" onClick={onSecondaryAction}>
+            {secondaryActionLabel}
+          </button>
+        )}
+      </div>
     </div>
   );
 };

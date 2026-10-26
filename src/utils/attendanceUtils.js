@@ -1,5 +1,6 @@
 /**
- * Attendance calculation and forecasting utilities
+ * Attendance calculation, forecasting, and data analysis utilities
+ * Provides exact mathematical calculations for student attendance tracking.
  */
 
 /**
@@ -27,7 +28,7 @@ export const calculateClassesNeeded = (attended, held, targetPercentage = 75) =>
     return {
       classesNeeded: 0,
       achievable: true,
-      message: 'No classes have been conducted yet.',
+      message: 'No classes have been recorded yet.',
     };
   }
 
@@ -63,6 +64,7 @@ export const calculateClassesNeeded = (attended, held, targetPercentage = 75) =>
     classesNeeded,
     achievable: true,
     message: `Attend the next ${classesNeeded} consecutive ${classesNeeded === 1 ? 'class' : 'classes'} to reach ${targetPercentage}%.`,
+    formulaText: `(${attended} + ${classesNeeded}) / (${held} + ${classesNeeded}) = ${calculateAttendancePercentage(attended + classesNeeded, held + classesNeeded)}%`,
   };
 };
 
@@ -110,12 +112,67 @@ export const calculateClassesCanMiss = (attended, held, targetPercentage = 75) =
  */
 export const calculateOverallAttendance = (subjects = []) => {
   if (!subjects || subjects.length === 0) {
-    return { totalHeld: 0, totalAttended: 0, percentage: 0 };
+    return { totalHeld: 0, totalAttended: 0, totalAbsent: 0, percentage: 0 };
   }
 
   const totalHeld = subjects.reduce((sum, s) => sum + (Number(s.held) || 0), 0);
   const totalAttended = subjects.reduce((sum, s) => sum + (Number(s.attended) || 0), 0);
+  const totalAbsent = subjects.reduce((sum, s) => sum + (Number(s.absent) || (Number(s.held) - Number(s.attended)) || 0), 0);
   const percentage = calculateAttendancePercentage(totalAttended, totalHeld);
 
-  return { totalHeld, totalAttended, percentage };
+  return { totalHeld, totalAttended, totalAbsent, percentage };
+};
+
+/**
+ * Derives subject statistics directly from attendance records array
+ */
+export const calculateSubjectStatsFromRecords = (subjectName, records = []) => {
+  const subRecords = records.filter((r) => r.subject === subjectName);
+  const attended = subRecords.filter((r) => r.status === 'Present').length;
+  const absent = subRecords.filter((r) => r.status === 'Absent').length;
+  const held = attended + absent;
+  const percentage = calculateAttendancePercentage(attended, held);
+
+  return {
+    held,
+    attended,
+    absent,
+    percentage,
+    records: subRecords,
+  };
+};
+
+/**
+ * Formats a YYYY-MM-DD date into friendly readable text (e.g. "Mon, Oct 26, 2026")
+ */
+export const formatAttendanceDate = (dateStr) => {
+  if (!dateStr) return '';
+  try {
+    const parts = dateStr.split('-');
+    if (parts.length === 3) {
+      const year = parseInt(parts[0], 10);
+      const month = parseInt(parts[1], 10) - 1;
+      const day = parseInt(parts[2], 10);
+      const d = new Date(year, month, day);
+
+      const today = new Date();
+      if (
+        d.getFullYear() === today.getFullYear() &&
+        d.getMonth() === today.getMonth() &&
+        d.getDate() === today.getDate()
+      ) {
+        return `Today, ${d.toLocaleDateString('en-US', { month: 'short', day: 'numeric' })}`;
+      }
+
+      return d.toLocaleDateString('en-US', {
+        weekday: 'short',
+        month: 'short',
+        day: 'numeric',
+        year: 'numeric',
+      });
+    }
+    return dateStr;
+  } catch {
+    return dateStr;
+  }
 };
