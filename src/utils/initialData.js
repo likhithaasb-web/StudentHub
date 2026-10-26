@@ -86,7 +86,7 @@ export const INITIAL_TIMETABLE = [
     classroom: 'Room 302',
     startTime: '09:00',
     endTime: '10:30',
-    color: '#DFD6AE',
+    color: '#8D4F4F',
   },
   {
     id: 'tt-2',
@@ -95,7 +95,7 @@ export const INITIAL_TIMETABLE = [
     classroom: 'Lab 4',
     startTime: '11:00',
     endTime: '12:30',
-    color: '#4a7b80',
+    color: '#B76E79',
   },
   {
     id: 'tt-3',
@@ -104,7 +104,7 @@ export const INITIAL_TIMETABLE = [
     classroom: 'Room 205',
     startTime: '10:00',
     endTime: '11:30',
-    color: '#C7B982',
+    color: '#FADADD',
   },
   {
     id: 'tt-4',
@@ -113,7 +113,7 @@ export const INITIAL_TIMETABLE = [
     classroom: 'Room 110',
     startTime: '13:30',
     endTime: '15:00',
-    color: '#34d399',
+    color: '#38b289',
   },
   {
     id: 'tt-5',
@@ -122,7 +122,7 @@ export const INITIAL_TIMETABLE = [
     classroom: 'Seminar Hall B',
     startTime: '09:30',
     endTime: '11:00',
-    color: '#DFD6AE',
+    color: '#8D4F4F',
   },
   {
     id: 'tt-6',
@@ -131,7 +131,7 @@ export const INITIAL_TIMETABLE = [
     classroom: 'Comp Lab 2',
     startTime: '14:00',
     endTime: '16:00',
-    color: '#4a7b80',
+    color: '#B76E79',
   },
   {
     id: 'tt-7',
@@ -140,7 +140,7 @@ export const INITIAL_TIMETABLE = [
     classroom: 'Room 302',
     startTime: '10:00',
     endTime: '11:30',
-    color: '#C7B982',
+    color: '#e5a866',
   },
   {
     id: 'tt-8',
@@ -149,7 +149,7 @@ export const INITIAL_TIMETABLE = [
     classroom: 'Lab 1',
     startTime: '13:00',
     endTime: '15:00',
-    color: '#67e8f9',
+    color: '#FADADD',
   },
   {
     id: 'tt-9',
@@ -158,7 +158,7 @@ export const INITIAL_TIMETABLE = [
     classroom: 'Room 110',
     startTime: '09:00',
     endTime: '10:30',
-    color: '#34d399',
+    color: '#38b289',
   },
   {
     id: 'tt-10',
@@ -167,7 +167,7 @@ export const INITIAL_TIMETABLE = [
     classroom: 'Room 205',
     startTime: '11:00',
     endTime: '12:30',
-    color: '#DFD6AE',
+    color: '#8D4F4F',
   },
   {
     id: 'tt-11',
@@ -176,7 +176,7 @@ export const INITIAL_TIMETABLE = [
     classroom: 'Innovation Hub',
     startTime: '10:00',
     endTime: '12:00',
-    color: '#C7B982',
+    color: '#B76E79',
   },
 ];
 
