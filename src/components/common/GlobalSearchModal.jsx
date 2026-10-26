@@ -2,7 +2,8 @@ import React, { useState, useMemo } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { useApp } from '../../context/AppContext';
 import Modal from './Modal';
-import { Search, CheckSquare, FileText, Calendar, Clock, ArrowRight } from 'lucide-react';
+import { Search, CheckSquare, FileText, Calendar, Clock, ArrowRight, Briefcase } from 'lucide-react';
+import { resumeStorage } from '../../utils/resumeStorage';
 
 const GlobalSearchModal = () => {
   const { searchModalOpen, setSearchModalOpen, tasks, notes, exams, timetable } = useApp();
@@ -42,11 +43,21 @@ const GlobalSearchModal = () => {
         c.day.toLowerCase().includes(q)
     );
 
+    const allResumes = resumeStorage.getResumes();
+    const matchedResumes = allResumes.filter(
+      (r) =>
+        (r.title && r.title.toLowerCase().includes(q)) ||
+        (r.personal?.fullName && r.personal.fullName.toLowerCase().includes(q)) ||
+        (r.personal?.headline && r.personal.headline.toLowerCase().includes(q)) ||
+        (r.targetRole && r.targetRole.toLowerCase().includes(q))
+    );
+
     return {
       tasks: matchedTasks,
       notes: matchedNotes,
       exams: matchedExams,
       timetable: matchedClasses,
+      resumes: matchedResumes,
     };
   }, [searchTerm, tasks, notes, exams, timetable]);
 
@@ -54,7 +65,8 @@ const GlobalSearchModal = () => {
     results.tasks.length +
     results.notes.length +
     results.exams.length +
-    results.timetable.length;
+    results.timetable.length +
+    (results.resumes?.length || 0);
 
   const handleSelect = (path) => {
     setSearchModalOpen(false);
@@ -250,6 +262,40 @@ const GlobalSearchModal = () => {
                     <div>
                       <div style={{ fontSize: '0.9rem', fontWeight: 600, color: 'var(--text-primary)' }}>{item.subject}</div>
                       <div style={{ fontSize: '0.75rem', color: 'var(--text-muted)' }}>{item.day} • {item.startTime} - {item.endTime} ({item.classroom})</div>
+                    </div>
+                    <ArrowRight size={14} style={{ color: 'var(--text-muted)' }} />
+                  </div>
+                ))}
+              </div>
+            </div>
+          )}
+          {/* Resumes */}
+          {results.resumes && results.resumes.length > 0 && (
+            <div>
+              <div style={{ fontSize: '0.75rem', fontWeight: 700, textTransform: 'uppercase', color: 'var(--text-muted)', marginBottom: '0.5rem', display: 'flex', alignItems: 'center', gap: '0.4rem' }}>
+                <Briefcase size={14} /> Resumes ({results.resumes.length})
+              </div>
+              <div style={{ display: 'flex', flexDirection: 'column', gap: '0.4rem' }}>
+                {results.resumes.map((resume) => (
+                  <div
+                    key={resume.id}
+                    onClick={() => handleSelect('/career')}
+                    style={{
+                      display: 'flex',
+                      alignItems: 'center',
+                      justifyContent: 'space-between',
+                      padding: '0.65rem 0.85rem',
+                      borderRadius: 'var(--radius-md)',
+                      backgroundColor: 'var(--bg-card)',
+                      border: '1px solid var(--border-subtle)',
+                      cursor: 'pointer',
+                    }}
+                    onMouseEnter={(e) => (e.currentTarget.style.borderColor = 'var(--primary)')}
+                    onMouseLeave={(e) => (e.currentTarget.style.borderColor = 'var(--border-subtle)')}
+                  >
+                    <div>
+                      <div style={{ fontSize: '0.9rem', fontWeight: 600, color: 'var(--text-primary)' }}>{resume.title}</div>
+                      <div style={{ fontSize: '0.75rem', color: 'var(--text-muted)' }}>Template: {resume.template} • {resume.personal?.fullName}</div>
                     </div>
                     <ArrowRight size={14} style={{ color: 'var(--text-muted)' }} />
                   </div>

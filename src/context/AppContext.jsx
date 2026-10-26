@@ -13,6 +13,7 @@ import {
 } from '../utils/initialData';
 import { getDaysRemaining } from '../utils/dateUtils';
 import { calculateAttendancePercentage } from '../utils/attendanceUtils';
+import { resumeStorage } from '../utils/resumeStorage';
 
 const AppContext = createContext(null);
 
@@ -655,10 +656,12 @@ export const AppProvider = ({ children }) => {
     storage.set('attendance_records', INITIAL_ATTENDANCE_RECORDS);
     storage.set('attendance', INITIAL_ATTENDANCE);
     storage.set('studySessions', INITIAL_STUDY_SESSIONS);
+    resumeStorage.restoreDemoResumes();
   };
 
   const clearAllData = () => {
     storage.clearAll();
+    resumeStorage.clearAllResumes();
     const blankSettings = {
       studentName: 'Student',
       collegeName: '',

@@ -25,6 +25,8 @@ const PAGE_TITLES = {
   '/notes': 'Notes Organizer',
   '/attendance': 'Attendance Tracker & Calculator',
   '/study-planner': 'Study Planner & Focus Timer',
+  '/career': 'Career Studio & Resume Builder',
+  '/career-studio': 'Career Studio & Resume Builder',
   '/settings': 'Account & Preferences',
 };
 

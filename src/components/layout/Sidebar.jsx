@@ -10,6 +10,7 @@ import {
   Percent,
   Timer,
   Settings,
+  Briefcase,
   ChevronLeft,
   ChevronRight,
   BookOpen,
@@ -33,6 +34,7 @@ const Sidebar = ({ isCollapsed, setIsCollapsed, isMobileOpen, setIsMobileOpen })
     { name: 'Notes', path: '/notes', icon: FileText },
     { name: 'Attendance', path: '/attendance', icon: Percent, badge: lowAttendanceCount > 0 ? '!' : null, badgeColor: 'var(--warning)' },
     { name: 'Study Planner', path: '/study-planner', icon: Timer },
+    { name: 'Career Studio', path: '/career', icon: Briefcase },
     { name: 'Settings', path: '/settings', icon: Settings },
   ];
 

@@ -448,3 +448,68 @@ select {
 }
 
 @media (max-width: 768px) { .attendance-calendar-grid { grid-template-columns: 1fr !important; } }
+
+/* ==========================================================================
+   Career Studio & Resume Builder Styling
+   ========================================================================== */
+
+@media (max-width: 900px) {
+  .resume-editor-grid {
+    grid-template-columns: 1fr !important;
+  }
+  .mobile-editor-tabs {
+    display: flex !important;
+  }
+  .hide-on-mobile-tab {
+    display: none !important;
+  }
+  .resume-paper {
+    width: 100% !important;
+    min-width: 100% !important;
+    transform: none !important;
+    padding: 12mm 10mm !important;
+  }
+}
+
+/* Print Optimization for True A4 PDF Export */
+@page {
+  size: A4 portrait;
+  margin: 10mm;
+}
+
+@media print {
+  body.printing-resume-active {
+    background: #ffffff !important;
+    color: #111827 !important;
+    margin: 0 !important;
+    padding: 0 !important;
+  }
+  body.printing-resume-active aside,
+  body.printing-resume-active header,
+  body.printing-resume-active nav,
+  body.printing-resume-active .btn,
+  body.printing-resume-active .btn-icon,
+  body.printing-resume-active .editor-pane,
+  body.printing-resume-active .mobile-editor-tabs,
+  body.printing-resume-active .mobile-bottom-nav,
+  body.printing-resume-active .card:not(.resume-paper) {
+    display: none !important;
+  }
+  #printable-resume-container {
+    box-shadow: none !important;
+    border: none !important;
+    width: 100% !important;
+    max-width: 100% !important;
+    margin: 0 !important;
+    padding: 0 !important;
+  }
+  .resume-paper h3,
+  .resume-paper h4 {
+    page-break-after: avoid;
+    break-after: avoid;
+  }
+  .resume-paper > div > div {
+    page-break-inside: avoid;
+    break-inside: avoid;
+  }
+}

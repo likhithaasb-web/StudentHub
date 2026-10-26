@@ -9,6 +9,7 @@ import Exams from './pages/Exams';
 import Notes from './pages/Notes';
 import Attendance from './pages/Attendance';
 import StudyPlanner from './pages/StudyPlanner';
+import CareerStudio from './pages/CareerStudio';
 import Settings from './pages/Settings';
 import Login from './pages/Login';
 
@@ -59,6 +60,8 @@ function AppRoutes() {
         <Route path="notes" element={<Notes />} />
         <Route path="attendance" element={<Attendance />} />
         <Route path="study-planner" element={<StudyPlanner />} />
+        <Route path="career" element={<CareerStudio />} />
+        <Route path="career-studio" element={<Navigate to="/career" replace />} />
         <Route path="settings" element={<Settings />} />
         <Route path="*" element={<Navigate to="/" replace />} />
       </Route>
