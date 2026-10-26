@@ -8,7 +8,19 @@ Built with **React**, **Vite**, **React Router v6**, **Lucide Icons**, **Rechart
 
 ## 🌟 Key Features
 
-### 1. Dashboard Overview
+### 1. Authentication & Onboarding (Login & Signup)
+- **High-Converting Split-Screen Interface**: Custom designed following modern SaaS standards with Dark Blue (`#274245`) and Yellow Sapling (`#DFD6AE`).
+- **Interactive Mini Dashboard Showcase**: Displays live preview components on the left (mini sidebar, 4 stat cards, 7-day study bars, donut chart, schedule, and deadlines).
+- **Comprehensive Authentication Form**:
+  - Email and password validation with show/hide password toggle.
+  - "Remember me" persistence checkbox.
+  - "Forgot password?" prompt.
+  - Primary "Sign In ->" action in Yellow Sapling.
+  - Google Sign-In with official multi-color brand logo.
+  - **Instant 1-Click Demo Login** for quick reviewer evaluation.
+  - Switchable mode: Seamless toggle between **Sign In** and **Create Account**.
+
+### 2. Dashboard Overview
 - **Dynamic Greeting & Time Banner**: Personalized greetings (*"Good morning / afternoon / evening"*) with live calendar date and student profile greeting.
 - **Real-Time Key Metrics**:
   - Pending assignments count
