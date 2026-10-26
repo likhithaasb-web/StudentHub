@@ -171,7 +171,7 @@ const Settings = () => {
         </div>
 
         <p style={{ fontSize: '0.875rem', color: 'var(--text-secondary)', marginBottom: '1.25rem' }}>
-          Choose between Dark Mahogany & Muted Copper or the soft Blush Pink mode.
+          Choose between the Dark Blue & Yellow Sapling theme or the crisp light mode.
         </p>
 
         <div style={{ display: 'flex', gap: '1rem', flexWrap: 'wrap' }}>
@@ -185,23 +185,23 @@ const Settings = () => {
               minWidth: 160,
               padding: '1.25rem',
               borderRadius: 'var(--radius-md)',
-              backgroundColor: '#3A1F1A',
-              border: theme === 'dark' ? '2px solid #FADADD' : '1px solid #552E27',
-              color: '#FDF6F7',
+              backgroundColor: '#274245',
+              border: theme === 'dark' ? '2px solid #DFD6AE' : '1px solid #38575c',
+              color: '#F7F5EC',
               cursor: 'pointer',
               textAlign: 'left',
               display: 'flex',
               flexDirection: 'column',
               gap: '0.5rem',
-              boxShadow: theme === 'dark' ? '0 0 16px rgba(183, 110, 121, 0.4)' : 'none',
+              boxShadow: theme === 'dark' ? '0 0 16px rgba(223, 214, 174, 0.35)' : 'none',
             }}
           >
             <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between' }}>
-              <span style={{ fontWeight: 700, color: '#FADADD' }}>Dark Mahogany & Copper</span>
-              {theme === 'dark' && <CheckCircle2 size={16} style={{ color: '#FADADD' }} />}
+              <span style={{ fontWeight: 700, color: '#DFD6AE' }}>Dark Blue & Yellow Sapling</span>
+              {theme === 'dark' && <CheckCircle2 size={16} style={{ color: '#DFD6AE' }} />}
             </div>
-            <span style={{ fontSize: '0.75rem', color: '#BA9B9E' }}>
-              Deep #3A1F1A mahogany with #8D4F4F muted copper & rose accents.
+            <span style={{ fontSize: '0.75rem', color: '#DFD6AE', opacity: 0.85 }}>
+              Deep #274245 dark blue with #DFD6AE yellow sapling highlights.
             </span>
           </button>
 
@@ -215,9 +215,9 @@ const Settings = () => {
               minWidth: 160,
               padding: '1.25rem',
               borderRadius: 'var(--radius-md)',
-              backgroundColor: '#FDF8F9',
-              border: theme === 'light' ? '2px solid #8D4F4F' : '1px solid #E8D0D3',
-              color: '#271512',
+              backgroundColor: '#F8F6EF',
+              border: theme === 'light' ? '2px solid #274245' : '1px solid #DFD6AE',
+              color: '#182C2E',
               cursor: 'pointer',
               textAlign: 'left',
               display: 'flex',
@@ -227,11 +227,11 @@ const Settings = () => {
             }}
           >
             <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between' }}>
-              <span style={{ fontWeight: 700, color: '#8D4F4F' }}>Blush Pink & Mahogany</span>
-              {theme === 'light' && <CheckCircle2 size={16} style={{ color: '#8D4F4F' }} />}
+              <span style={{ fontWeight: 700, color: '#274245' }}>Yellow Sapling Cream</span>
+              {theme === 'light' && <CheckCircle2 size={16} style={{ color: '#274245' }} />}
             </div>
-            <span style={{ fontSize: '0.75rem', color: '#7E6165' }}>
-              Crisp #FADADD blush tint base with muted copper structure.
+            <span style={{ fontSize: '0.75rem', color: '#667e80' }}>
+              Clean #DFD6AE warm cream base with dark blue structure.
             </span>
           </button>
         </div>

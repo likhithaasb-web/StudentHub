@@ -326,7 +326,7 @@ select {
   border: 1px solid var(--info-border);
 }
 
-.badge-purple, .badge-gold, .badge-copper, .badge-rose {
+.badge-purple, .badge-gold {
   background: var(--primary-light);
   color: var(--primary);
   border: 1px solid var(--border-subtle);

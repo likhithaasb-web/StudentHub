@@ -134,8 +134,8 @@ const Dashboard = () => {
           value={completedTasksCount}
           subtitle={`${tasks.length > 0 ? Math.round((completedTasksCount / tasks.length) * 100) : 0}% completion rate`}
           icon={CheckCircle2}
-          color="#38b289"
-          bgColor="rgba(56, 178, 137, 0.16)"
+          color="#34d399"
+          bgColor="rgba(52, 211, 153, 0.14)"
           linkTo="/tasks"
         />
         <StatCard
@@ -143,8 +143,8 @@ const Dashboard = () => {
           value={upcomingExamsCount}
           subtitle={upcomingExamsCount > 0 ? 'Next exam coming up' : 'No upcoming exams'}
           icon={GraduationCap}
-          color="#B76E79"
-          bgColor="rgba(183, 110, 121, 0.16)"
+          color="#67e8f9"
+          bgColor="rgba(103, 232, 249, 0.14)"
           linkTo="/exams"
         />
         <StatCard
@@ -158,8 +158,8 @@ const Dashboard = () => {
               : `Below target (${target}%)`
           }
           icon={Percent}
-          color={isAttendanceSafe ? '#38b289' : '#f87171'}
-          bgColor={isAttendanceSafe ? 'rgba(56, 178, 137, 0.16)' : 'rgba(248, 113, 113, 0.16)'}
+          color={isAttendanceSafe ? '#34d399' : '#f87171'}
+          bgColor={isAttendanceSafe ? 'rgba(52, 211, 153, 0.14)' : 'rgba(248, 113, 113, 0.14)'}
           linkTo="/attendance"
         />
       </div>

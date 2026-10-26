@@ -1,77 +1,73 @@
 /* ==========================================================================
    CSS Custom Properties (Variables) - StudentHub Theme System
-   Theme: Muted Copper (#8D4F4F) & Dark Mahogany (#3A1F1A)
-   with Rose Gold (#B76E79) and Blush Pink (#FADADD)
+   Theme: Dark Blue (#274245) & Yellow Sapling (#DFD6AE)
    ========================================================================== */
 
 :root {
   /* Exact User Brand Colors */
-  --brand-dark-mahogany: #3A1F1A;
-  --brand-muted-copper: #8D4F4F;
-  --brand-rose-gold: #B76E79;
-  --brand-blush-pink: #FADADD;
+  --brand-dark-blue: #274245;
+  --brand-yellow-sapling: #DFD6AE;
 
-  /* Default Dark Mode: Deep Dark Mahogany Base with Muted Copper & Rose Gold Accents */
-  --bg-primary: #1C0F0D;
-  --bg-secondary: #271512;
-  --bg-tertiary: #311B17;
-  --bg-card: #3A1F1A;
-  --bg-card-hover: #482721;
-  --bg-surface: #562E27;
-  --bg-input: #20110E;
-  --bg-overlay: rgba(28, 15, 13, 0.85);
+  /* Default Dark Mode: Deep Dark Blue / Teal Base with Yellow Sapling Accents */
+  --bg-primary: #152426;
+  --bg-secondary: #1c3134;
+  --bg-tertiary: #223c3f;
+  --bg-card: #274245;
+  --bg-card-hover: #2e4d52;
+  --bg-surface: #385d62;
+  --bg-input: #17282b;
+  --bg-overlay: rgba(21, 36, 38, 0.82);
 
-  --border-subtle: #552E27;
-  --border-focus: #B76E79;
-  --border-hover: #8D4F4F;
+  --border-subtle: #38575c;
+  --border-focus: #DFD6AE;
+  --border-hover: #4e777d;
 
-  --text-primary: #FDF6F7;
-  --text-secondary: #FADADD;
-  --text-muted: #BA9B9E;
-  --text-inverse: #1C0F0D;
+  --text-primary: #F7F5EC;
+  --text-secondary: #DFD6AE;
+  --text-muted: #9bb3b4;
+  --text-inverse: #152426;
 
-  /* Primary Accent: Rose Gold to Blush Pink */
-  --primary: #FADADD;
-  --primary-hover: #FFF0F2;
-  --primary-text: #271512;
-  --primary-light: rgba(250, 218, 221, 0.15);
-  --primary-glow: rgba(183, 110, 121, 0.35);
+  /* Primary Accent: Yellow Sapling */
+  --primary: #DFD6AE;
+  --primary-hover: #EDE6C8;
+  --primary-text: #152426;
+  --primary-light: rgba(223, 214, 174, 0.15);
+  --primary-glow: rgba(223, 214, 174, 0.35);
 
-  --accent-copper: #8D4F4F;
-  --accent-copper-light: rgba(141, 79, 79, 0.35);
-  --accent-rose: #B76E79;
-  --accent-rose-light: rgba(183, 110, 121, 0.18);
-  --accent-blush: #FADADD;
+  --accent-blue: #274245;
+  --accent-blue-light: rgba(39, 66, 69, 0.4);
+  --accent-gold: #DFD6AE;
+  --accent-gold-light: rgba(223, 214, 174, 0.15);
+  --accent-cyan: #4ebec9;
 
-  --gradient-primary: linear-gradient(135deg, #FADADD 0%, #DEB3B9 50%, #B76E79 100%);
-  --gradient-copper: linear-gradient(135deg, #B76E79 0%, #8D4F4F 100%);
-  --gradient-mahogany: linear-gradient(135deg, #3A1F1A 0%, #271512 100%);
-  --gradient-card: linear-gradient(135deg, rgba(250, 218, 221, 0.05) 0%, rgba(58, 31, 26, 0.9) 100%);
-  --gradient-glow: radial-gradient(circle at 50% 0%, rgba(183, 110, 121, 0.25) 0%, rgba(58, 31, 26, 0) 70%);
+  --gradient-primary: linear-gradient(135deg, #DFD6AE 0%, #ecdba0 50%, #C7B982 100%);
+  --gradient-blue: linear-gradient(135deg, #274245 0%, #1c3134 100%);
+  --gradient-card: linear-gradient(135deg, rgba(223, 214, 174, 0.05) 0%, rgba(39, 66, 69, 0) 100%);
+  --gradient-glow: radial-gradient(circle at 50% 0%, rgba(223, 214, 174, 0.22) 0%, rgba(39, 66, 69, 0) 70%);
 
-  /* Status Colors Harmonized with Copper/Mahogany */
-  --success: #38b289;
-  --success-bg: rgba(56, 178, 137, 0.14);
-  --success-border: rgba(56, 178, 137, 0.35);
+  /* Status Colors */
+  --success: #34d399;
+  --success-bg: rgba(52, 211, 153, 0.14);
+  --success-border: rgba(52, 211, 153, 0.35);
 
-  --warning: #e5a866;
-  --warning-bg: rgba(229, 168, 102, 0.16);
-  --warning-border: rgba(229, 168, 102, 0.38);
+  --warning: #DFD6AE;
+  --warning-bg: rgba(223, 214, 174, 0.16);
+  --warning-border: rgba(223, 214, 174, 0.38);
 
   --danger: #f87171;
   --danger-bg: rgba(248, 113, 113, 0.14);
   --danger-border: rgba(248, 113, 113, 0.35);
 
-  --info: #818cf8;
-  --info-bg: rgba(129, 140, 248, 0.14);
-  --info-border: rgba(129, 140, 248, 0.35);
+  --info: #67e8f9;
+  --info-bg: rgba(103, 232, 249, 0.14);
+  --info-border: rgba(103, 232, 249, 0.35);
 
   /* Shadows */
-  --shadow-sm: 0 1px 2px 0 rgba(15, 6, 5, 0.4);
-  --shadow-md: 0 4px 6px -1px rgba(15, 6, 5, 0.5), 0 2px 4px -2px rgba(15, 6, 5, 0.4);
-  --shadow-lg: 0 10px 15px -3px rgba(15, 6, 5, 0.5), 0 4px 6px -4px rgba(15, 6, 5, 0.4);
-  --shadow-xl: 0 20px 25px -5px rgba(15, 6, 5, 0.6), 0 8px 10px -6px rgba(15, 6, 5, 0.5);
-  --shadow-glow: 0 0 20px rgba(183, 110, 121, 0.35);
+  --shadow-sm: 0 1px 2px 0 rgba(10, 20, 22, 0.35);
+  --shadow-md: 0 4px 6px -1px rgba(10, 20, 22, 0.45), 0 2px 4px -2px rgba(10, 20, 22, 0.35);
+  --shadow-lg: 0 10px 15px -3px rgba(10, 20, 22, 0.45), 0 4px 6px -4px rgba(10, 20, 22, 0.35);
+  --shadow-xl: 0 20px 25px -5px rgba(10, 20, 22, 0.55), 0 8px 10px -6px rgba(10, 20, 22, 0.45);
+  --shadow-glow: 0 0 20px rgba(223, 214, 174, 0.28);
 
   /* Radii */
   --radius-sm: 6px;
@@ -92,44 +88,43 @@
 }
 
 [data-theme="light"] {
-  /* Light Mode: Warm Blush Cream Base with Dark Mahogany (#3A1F1A) & Muted Copper (#8D4F4F) */
-  --bg-primary: #FDF8F9;
+  /* Light Mode: Warm Yellow Sapling (#DFD6AE) & Cream Base with Dark Blue (#274245) Structure */
+  --bg-primary: #F8F6EF;
   --bg-secondary: #FFFFFF;
-  --bg-tertiary: #F8ECEE;
+  --bg-tertiary: #EFEBD9;
   --bg-card: #FFFFFF;
-  --bg-card-hover: #FCF5F6;
-  --bg-surface: #F5DEE1;
+  --bg-card-hover: #FCFBF7;
+  --bg-surface: #E8E2CB;
   --bg-input: #FFFFFF;
-  --bg-overlay: rgba(58, 31, 26, 0.65);
+  --bg-overlay: rgba(39, 66, 69, 0.65);
 
-  --border-subtle: #E8D0D3;
-  --border-focus: #8D4F4F;
-  --border-hover: #B76E79;
+  --border-subtle: #DFD6AE;
+  --border-focus: #274245;
+  --border-hover: #CFC497;
 
-  --text-primary: #271512;
-  --text-secondary: #8D4F4F;
-  --text-muted: #7E6165;
+  --text-primary: #182C2E;
+  --text-secondary: #274245;
+  --text-muted: #667e80;
   --text-inverse: #FFFFFF;
 
-  --primary: #8D4F4F;
-  --primary-hover: #783F3F;
-  --primary-text: #FFFFFF;
-  --primary-light: rgba(141, 79, 79, 0.12);
-  --primary-glow: rgba(141, 79, 79, 0.25);
+  --primary: #274245;
+  --primary-hover: #1b3032;
+  --primary-text: #DFD6AE;
+  --primary-light: rgba(39, 66, 69, 0.1);
+  --primary-glow: rgba(39, 66, 69, 0.22);
 
-  --accent-copper: #8D4F4F;
-  --accent-copper-light: rgba(141, 79, 79, 0.12);
-  --accent-rose: #B76E79;
-  --accent-rose-light: rgba(183, 110, 121, 0.15);
-  --accent-blush: #FADADD;
+  --accent-blue: #274245;
+  --accent-blue-light: rgba(39, 66, 69, 0.1);
+  --accent-gold: #B5A467;
+  --accent-gold-light: rgba(223, 214, 174, 0.25);
 
-  --gradient-primary: linear-gradient(135deg, #8D4F4F 0%, #3A1F1A 100%);
-  --gradient-card: linear-gradient(135deg, rgba(250, 218, 221, 0.2) 0%, rgba(255, 255, 255, 0.9) 100%);
-  --gradient-glow: radial-gradient(circle at 50% 0%, rgba(141, 79, 79, 0.12) 0%, rgba(183, 110, 121, 0) 70%);
+  --gradient-primary: linear-gradient(135deg, #274245 0%, #1e3538 100%);
+  --gradient-card: linear-gradient(135deg, rgba(223, 214, 174, 0.12) 0%, rgba(255, 255, 255, 0.8) 100%);
+  --gradient-glow: radial-gradient(circle at 50% 0%, rgba(39, 66, 69, 0.1) 0%, rgba(223, 214, 174, 0) 70%);
 
-  --shadow-sm: 0 1px 3px 0 rgba(58, 31, 26, 0.08);
-  --shadow-md: 0 4px 6px -1px rgba(58, 31, 26, 0.1), 0 2px 4px -2px rgba(58, 31, 26, 0.06);
-  --shadow-lg: 0 10px 15px -3px rgba(58, 31, 26, 0.12), 0 4px 6px -4px rgba(58, 31, 26, 0.06);
-  --shadow-xl: 0 20px 25px -5px rgba(58, 31, 26, 0.15), 0 8px 10px -6px rgba(58, 31, 26, 0.08);
-  --shadow-glow: 0 0 20px rgba(141, 79, 79, 0.16);
+  --shadow-sm: 0 1px 3px 0 rgba(39, 66, 69, 0.08);
+  --shadow-md: 0 4px 6px -1px rgba(39, 66, 69, 0.1), 0 2px 4px -2px rgba(39, 66, 69, 0.06);
+  --shadow-lg: 0 10px 15px -3px rgba(39, 66, 69, 0.12), 0 4px 6px -4px rgba(39, 66, 69, 0.06);
+  --shadow-xl: 0 20px 25px -5px rgba(39, 66, 69, 0.15), 0 8px 10px -6px rgba(39, 66, 69, 0.08);
+  --shadow-glow: 0 0 20px rgba(39, 66, 69, 0.15);
 }
