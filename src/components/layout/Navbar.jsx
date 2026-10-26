@@ -14,6 +14,7 @@ import {
   X,
   ExternalLink,
   BookOpen,
+  LogOut,
 } from 'lucide-react';
 
 const PAGE_TITLES = {
@@ -34,6 +35,7 @@ const Navbar = ({ isCollapsed, setIsMobileOpen }) => {
     theme,
     toggleTheme,
     settings,
+    logout,
     notifications,
     dismissNotification,
     clearAllNotifications,
@@ -471,6 +473,34 @@ const Navbar = ({ isCollapsed, setIsMobileOpen }) => {
               >
                 {theme === 'dark' ? <Sun size={16} style={{ color: 'var(--text-secondary)' }} /> : <Moon size={16} style={{ color: 'var(--text-secondary)' }} />}
                 <span>Theme: {theme === 'dark' ? 'Dark Mode' : 'Light Mode'}</span>
+              </button>
+
+              <button
+                onClick={() => {
+                  logout();
+                  setProfileOpen(false);
+                  navigate('/login');
+                }}
+                style={{
+                  width: '100%',
+                  display: 'flex',
+                  alignItems: 'center',
+                  gap: '0.65rem',
+                  padding: '0.6rem 0.75rem',
+                  borderRadius: 'var(--radius-md)',
+                  color: 'var(--danger)',
+                  fontSize: '0.85rem',
+                  textAlign: 'left',
+                  cursor: 'pointer',
+                  marginTop: '0.25rem',
+                  borderTop: '1px solid var(--border-subtle)',
+                  transition: 'background var(--transition-fast)',
+                }}
+                onMouseEnter={(e) => (e.currentTarget.style.backgroundColor = 'var(--danger-bg)')}
+                onMouseLeave={(e) => (e.currentTarget.style.backgroundColor = 'transparent')}
+              >
+                <LogOut size={16} />
+                <span>Sign Out</span>
               </button>
             </div>
           )}

@@ -18,6 +18,7 @@ const getRelativeDate = (offsetDays) => {
 
 export const INITIAL_SETTINGS = {
   studentName: 'Alex Morgan',
+  email: 'alex@university.edu',
   collegeName: 'State Tech University',
   targetAttendance: 75,
   dailyStudyGoalMinutes: 120, // 2 hours

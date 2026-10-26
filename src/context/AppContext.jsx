@@ -27,8 +27,9 @@ export const AppProvider = ({ children }) => {
     setTheme((prev) => (prev === 'dark' ? 'light' : 'dark'));
   };
 
-  // 2. Settings State
+  // 2. Settings & Auth State
   const [settings, setSettings] = useState(() => storage.get('settings', INITIAL_SETTINGS));
+  const [isAuthenticated, setIsAuthenticated] = useState(() => storage.get('isAuthenticated', true));
 
   const updateSettings = (newSettings) => {
     setSettings((prev) => {
@@ -36,6 +37,42 @@ export const AppProvider = ({ children }) => {
       storage.set('settings', updated);
       return updated;
     });
+  };
+
+  const login = (email, password) => {
+    setIsAuthenticated(true);
+    storage.set('isAuthenticated', true);
+    if (email) {
+      updateSettings({ email });
+    }
+    return true;
+  };
+
+  const signup = ({ name, email, college, password }) => {
+    setIsAuthenticated(true);
+    storage.set('isAuthenticated', true);
+    updateSettings({
+      studentName: name || 'Student',
+      email: email || '',
+      collegeName: college || '',
+    });
+    return true;
+  };
+
+  const logout = () => {
+    setIsAuthenticated(false);
+    storage.set('isAuthenticated', false);
+  };
+
+  const demoLogin = () => {
+    setIsAuthenticated(true);
+    storage.set('isAuthenticated', true);
+    updateSettings({
+      studentName: 'Alex Morgan',
+      email: 'alex@university.edu',
+      collegeName: 'State Tech University',
+    });
+    return true;
   };
 
   // 3. Tasks State
@@ -482,6 +519,11 @@ export const AppProvider = ({ children }) => {
         toggleTheme,
         settings,
         updateSettings,
+        isAuthenticated,
+        login,
+        logout,
+        signup,
+        demoLogin,
         tasks,
         addTask,
         updateTask,

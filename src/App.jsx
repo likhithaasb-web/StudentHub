@@ -10,12 +10,17 @@ import Notes from './pages/Notes';
 import Attendance from './pages/Attendance';
 import StudyPlanner from './pages/StudyPlanner';
 import Settings from './pages/Settings';
+import Login from './pages/Login';
 
 function App() {
   return (
     <AppProvider>
       <BrowserRouter>
         <Routes>
+          {/* Public Authentication Route */}
+          <Route path="/login" element={<Login />} />
+
+          {/* Main Dashboard Layout */}
           <Route path="/" element={<Layout />}>
             <Route index element={<Dashboard />} />
             <Route path="tasks" element={<Tasks />} />
