@@ -29,7 +29,10 @@ export const AppProvider = ({ children }) => {
 
   // 2. Settings & Auth State
   const [settings, setSettings] = useState(() => storage.get('settings', INITIAL_SETTINGS));
-  const [isAuthenticated, setIsAuthenticated] = useState(() => storage.get('isAuthenticated', true));
+  const [isAuthenticated, setIsAuthenticated] = useState(() => {
+    // Defaults to false so visiting the website immediately opens the Login page
+    return Boolean(storage.get('auth_session_active', false));
+  });
 
   const updateSettings = (newSettings) => {
     setSettings((prev) => {
@@ -41,7 +44,7 @@ export const AppProvider = ({ children }) => {
 
   const login = (email, password) => {
     setIsAuthenticated(true);
-    storage.set('isAuthenticated', true);
+    storage.set('auth_session_active', true);
     if (email) {
       updateSettings({ email });
     }
@@ -50,7 +53,7 @@ export const AppProvider = ({ children }) => {
 
   const signup = ({ name, email, college, password }) => {
     setIsAuthenticated(true);
-    storage.set('isAuthenticated', true);
+    storage.set('auth_session_active', true);
     updateSettings({
       studentName: name || 'Student',
       email: email || '',
@@ -61,12 +64,12 @@ export const AppProvider = ({ children }) => {
 
   const logout = () => {
     setIsAuthenticated(false);
-    storage.set('isAuthenticated', false);
+    storage.set('auth_session_active', false);
   };
 
   const demoLogin = () => {
     setIsAuthenticated(true);
-    storage.set('isAuthenticated', true);
+    storage.set('auth_session_active', true);
     updateSettings({
       studentName: 'Alex Morgan',
       email: 'alex@university.edu',
