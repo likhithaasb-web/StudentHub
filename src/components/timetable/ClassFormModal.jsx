@@ -3,13 +3,13 @@ import Modal from '../common/Modal';
 import { DAYS_OF_WEEK } from '../../utils/dateUtils';
 
 const COLOR_PRESETS = [
-  '#6366f1', // Indigo
-  '#8b5cf6', // Purple
-  '#06b6d4', // Cyan
-  '#10b981', // Emerald
-  '#f59e0b', // Amber
-  '#ec4899', // Pink
-  '#ef4444', // Red
+  '#DFD6AE', // Yellow Sapling
+  '#274245', // Dark Blue
+  '#4a7b80', // Soft Teal
+  '#C7B982', // Antique Gold
+  '#34d399', // Mint Emerald
+  '#e09f58', // Warm Ochre
+  '#f87171', // Coral Rose
 ];
 
 const ClassFormModal = ({
@@ -26,7 +26,7 @@ const ClassFormModal = ({
     classroom: '',
     startTime: '09:00',
     endTime: '10:30',
-    color: '#6366f1',
+    color: '#DFD6AE',
   });
 
   const [error, setError] = useState('');

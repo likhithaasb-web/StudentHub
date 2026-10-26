@@ -104,8 +104,8 @@ const Timetable = () => {
               className="btn btn-sm"
               style={{
                 backgroundColor: viewMode === 'grid' ? 'var(--primary)' : 'transparent',
-                color: viewMode === 'grid' ? '#ffffff' : 'var(--text-secondary)',
-                fontWeight: 600,
+                color: viewMode === 'grid' ? 'var(--primary-text)' : 'var(--text-secondary)',
+                fontWeight: 700,
               }}
             >
               Week Grid
@@ -115,8 +115,8 @@ const Timetable = () => {
               className="btn btn-sm"
               style={{
                 backgroundColor: viewMode === 'day' ? 'var(--primary)' : 'transparent',
-                color: viewMode === 'day' ? '#ffffff' : 'var(--text-secondary)',
-                fontWeight: 600,
+                color: viewMode === 'day' ? 'var(--primary-text)' : 'var(--text-secondary)',
+                fontWeight: 700,
               }}
             >
               Day View
@@ -136,7 +136,7 @@ const Timetable = () => {
         <div
           className="card"
           style={{
-            background: 'linear-gradient(135deg, rgba(99, 102, 241, 0.12) 0%, rgba(139, 92, 246, 0.05) 100%)',
+            background: 'linear-gradient(135deg, rgba(223, 214, 174, 0.12) 0%, rgba(39, 66, 69, 0.25) 100%)',
             borderColor: 'var(--border-focus)',
             padding: '1.1rem 1.4rem',
             display: 'flex',
@@ -153,7 +153,7 @@ const Timetable = () => {
                 height: 44,
                 borderRadius: 'var(--radius-md)',
                 backgroundColor: 'var(--primary)',
-                color: '#ffffff',
+                color: 'var(--primary-text)',
                 display: 'flex',
                 alignItems: 'center',
                 justifyContent: 'center',
@@ -230,7 +230,7 @@ const Timetable = () => {
                   : isToday
                   ? '1px solid var(--border-focus)'
                   : '1px solid var(--border-subtle)',
-                color: isSelected ? '#ffffff' : isToday ? 'var(--primary)' : 'var(--text-secondary)',
+                color: isSelected ? 'var(--primary-text)' : isToday ? 'var(--primary)' : 'var(--text-secondary)',
                 fontWeight: isSelected || isToday ? 700 : 500,
                 fontSize: '0.875rem',
                 display: 'flex',

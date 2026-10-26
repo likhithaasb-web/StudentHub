@@ -128,13 +128,13 @@ const QuickActionModal = () => {
             padding: '0.5rem',
             borderRadius: 'var(--radius-sm)',
             fontSize: '0.85rem',
-            fontWeight: 600,
+            fontWeight: 700,
             display: 'flex',
             alignItems: 'center',
             justifyContent: 'center',
             gap: '0.4rem',
             backgroundColor: activeTab === 'task' ? 'var(--primary)' : 'transparent',
-            color: activeTab === 'task' ? '#ffffff' : 'var(--text-secondary)',
+            color: activeTab === 'task' ? 'var(--primary-text)' : 'var(--text-secondary)',
             transition: 'all var(--transition-fast)',
           }}
         >
@@ -150,13 +150,13 @@ const QuickActionModal = () => {
             padding: '0.5rem',
             borderRadius: 'var(--radius-sm)',
             fontSize: '0.85rem',
-            fontWeight: 600,
+            fontWeight: 700,
             display: 'flex',
             alignItems: 'center',
             justifyContent: 'center',
             gap: '0.4rem',
             backgroundColor: activeTab === 'note' ? 'var(--primary)' : 'transparent',
-            color: activeTab === 'note' ? '#ffffff' : 'var(--text-secondary)',
+            color: activeTab === 'note' ? 'var(--primary-text)' : 'var(--text-secondary)',
             transition: 'all var(--transition-fast)',
           }}
         >
@@ -172,13 +172,13 @@ const QuickActionModal = () => {
             padding: '0.5rem',
             borderRadius: 'var(--radius-sm)',
             fontSize: '0.85rem',
-            fontWeight: 600,
+            fontWeight: 700,
             display: 'flex',
             alignItems: 'center',
             justifyContent: 'center',
             gap: '0.4rem',
             backgroundColor: activeTab === 'exam' ? 'var(--primary)' : 'transparent',
-            color: activeTab === 'exam' ? '#ffffff' : 'var(--text-secondary)',
+            color: activeTab === 'exam' ? 'var(--primary-text)' : 'var(--text-secondary)',
             transition: 'all var(--transition-fast)',
           }}
         >

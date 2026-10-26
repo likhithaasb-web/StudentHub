@@ -115,8 +115,8 @@ const Exams = () => {
           className="btn btn-sm"
           style={{
             backgroundColor: activeTab === 'upcoming' ? 'var(--primary)' : 'transparent',
-            color: activeTab === 'upcoming' ? '#ffffff' : 'var(--text-secondary)',
-            fontWeight: 600,
+            color: activeTab === 'upcoming' ? 'var(--primary-text)' : 'var(--text-secondary)',
+            fontWeight: 700,
           }}
         >
           Upcoming ({upcomingExams.length})
@@ -126,8 +126,8 @@ const Exams = () => {
           className="btn btn-sm"
           style={{
             backgroundColor: activeTab === 'completed' ? 'var(--primary)' : 'transparent',
-            color: activeTab === 'completed' ? '#ffffff' : 'var(--text-secondary)',
-            fontWeight: 600,
+            color: activeTab === 'completed' ? 'var(--primary-text)' : 'var(--text-secondary)',
+            fontWeight: 700,
           }}
         >
           Completed ({completedExams.length})
@@ -137,8 +137,8 @@ const Exams = () => {
           className="btn btn-sm"
           style={{
             backgroundColor: activeTab === 'all' ? 'var(--primary)' : 'transparent',
-            color: activeTab === 'all' ? '#ffffff' : 'var(--text-secondary)',
-            fontWeight: 600,
+            color: activeTab === 'all' ? 'var(--primary-text)' : 'var(--text-secondary)',
+            fontWeight: 700,
           }}
         >
           All Exams ({exams.length})

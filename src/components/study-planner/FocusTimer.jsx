@@ -162,9 +162,10 @@ const FocusTimer = ({ onSessionComplete, existingSubjects = [] }) => {
             className="btn btn-sm"
             style={{
               backgroundColor: selectedMinutes === p.minutes ? 'var(--primary)' : 'var(--bg-tertiary)',
-              color: selectedMinutes === p.minutes ? '#ffffff' : 'var(--text-secondary)',
+              color: selectedMinutes === p.minutes ? 'var(--primary-text)' : 'var(--text-secondary)',
               border: '1px solid var(--border-subtle)',
               opacity: isRunning && selectedMinutes !== p.minutes ? 0.5 : 1,
+              fontWeight: 600,
             }}
           >
             {p.label}

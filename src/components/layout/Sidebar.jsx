@@ -100,7 +100,7 @@ const Sidebar = ({ isCollapsed, setIsCollapsed, isMobileOpen, setIsMobileOpen })
                 display: 'flex',
                 alignItems: 'center',
                 justifyContent: 'center',
-                color: '#ffffff',
+                color: 'var(--primary-text)',
                 boxShadow: 'var(--shadow-glow)',
                 flexShrink: 0,
               }}
@@ -109,7 +109,7 @@ const Sidebar = ({ isCollapsed, setIsCollapsed, isMobileOpen, setIsMobileOpen })
             </div>
             {!isCollapsed && (
               <div style={{ whiteSpace: 'nowrap' }}>
-                <span style={{ fontSize: '1.2rem', fontWeight: 800, letterSpacing: '-0.02em', background: 'var(--gradient-primary)', WebkitBackgroundClip: 'text', WebkitTextFillColor: 'transparent' }}>
+                <span style={{ fontSize: '1.2rem', fontWeight: 800, letterSpacing: '-0.02em', color: 'var(--text-secondary)' }}>
                   StudentHub
                 </span>
                 <span
@@ -177,9 +177,9 @@ const Sidebar = ({ isCollapsed, setIsCollapsed, isMobileOpen, setIsMobileOpen })
                   justifyContent: isCollapsed ? 'center' : 'flex-start',
                   borderRadius: 'var(--radius-md)',
                   textDecoration: 'none',
-                  color: isActive ? '#ffffff' : 'var(--text-secondary)',
+                  color: isActive ? 'var(--primary-text)' : 'var(--text-primary)',
                   backgroundColor: isActive ? 'var(--primary)' : 'transparent',
-                  fontWeight: isActive ? 600 : 500,
+                  fontWeight: isActive ? 700 : 500,
                   fontSize: '0.92rem',
                   transition: 'all var(--transition-fast)',
                   position: 'relative',
@@ -191,7 +191,7 @@ const Sidebar = ({ isCollapsed, setIsCollapsed, isMobileOpen, setIsMobileOpen })
                       size={20}
                       style={{
                         flexShrink: 0,
-                        color: isActive ? '#ffffff' : 'currentColor',
+                        color: isActive ? 'var(--primary-text)' : 'var(--text-secondary)',
                       }}
                     />
                     {!isCollapsed && (
@@ -270,12 +270,12 @@ const Sidebar = ({ isCollapsed, setIsCollapsed, isMobileOpen, setIsMobileOpen })
               width: 38,
               height: 38,
               borderRadius: 'var(--radius-full)',
-              background: 'linear-gradient(135deg, #8b5cf6, #ec4899)',
-              color: '#ffffff',
+              background: 'var(--gradient-primary)',
+              color: 'var(--primary-text)',
               display: 'flex',
               alignItems: 'center',
               justifyContent: 'center',
-              fontWeight: 700,
+              fontWeight: 800,
               fontSize: '0.95rem',
               flexShrink: 0,
             }}

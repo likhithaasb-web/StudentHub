@@ -230,7 +230,7 @@ select {
 
 .btn-primary {
   background: var(--gradient-primary);
-  color: #ffffff;
+  color: var(--primary-text);
   box-shadow: 0 4px 12px var(--primary-glow);
 }
 
@@ -326,10 +326,10 @@ select {
   border: 1px solid var(--info-border);
 }
 
-.badge-purple {
-  background: var(--accent-purple-light);
-  color: var(--accent-purple);
-  border: 1px solid rgba(139, 92, 246, 0.3);
+.badge-purple, .badge-gold {
+  background: var(--primary-light);
+  color: var(--primary);
+  border: 1px solid var(--border-subtle);
 }
 
 /* Progress Bar */

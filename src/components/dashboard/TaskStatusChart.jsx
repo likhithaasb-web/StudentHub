@@ -4,9 +4,9 @@ import { CheckSquare, ArrowRight } from 'lucide-react';
 import { Link } from 'react-router-dom';
 
 const STATUS_COLORS = {
-  Completed: '#10b981',
-  'In Progress': '#6366f1',
-  Pending: '#f59e0b',
+  Completed: '#34d399',
+  'In Progress': '#DFD6AE',
+  Pending: '#e09f58',
 };
 
 const CustomTooltip = ({ active, payload }) => {

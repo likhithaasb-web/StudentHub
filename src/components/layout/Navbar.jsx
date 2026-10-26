@@ -384,12 +384,12 @@ const Navbar = ({ isCollapsed, setIsMobileOpen }) => {
                 width: 36,
                 height: 36,
                 borderRadius: 'var(--radius-full)',
-                background: 'linear-gradient(135deg, #6366f1, #a855f7)',
-                color: '#ffffff',
+                background: 'var(--gradient-primary)',
+                color: 'var(--primary-text)',
                 display: 'flex',
                 alignItems: 'center',
                 justifyContent: 'center',
-                fontWeight: 700,
+                fontWeight: 800,
                 fontSize: '0.9rem',
               }}
             >
