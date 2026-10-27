@@ -1,0 +1,75 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <title>Google Account Authentication</title>
+  <style>
+    body {
+      font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+      background: #0b1a14;
+      color: #F1EAD7;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      height: 100vh;
+      margin: 0;
+      text-align: center;
+    }
+    .spinner {
+      width: 36px;
+      height: 36px;
+      border: 3px solid rgba(241, 234, 215, 0.2);
+      border-top-color: #17644D;
+      border-radius: 50%;
+      animation: spin 0.8s linear infinite;
+      margin-bottom: 16px;
+    }
+    @keyframes spin {
+      to { transform: rotate(360deg); }
+    }
+  </style>
+</head>
+<body>
+  <div class="spinner"></div>
+  <p>Connecting your Google Account to StudentHub...</p>
+
+  <script>
+    (function() {
+      // Parse token from hash if returned by Google OAuth
+      const hash = window.location.hash.substring(1);
+      const params = new URLSearchParams(hash || window.location.search);
+      const accessToken = params.get('access_token');
+      const idToken = params.get('id_token');
+      const error = params.get('error');
+
+      if (accessToken || idToken) {
+        if (window.opener) {
+          window.opener.postMessage({
+            type: 'GOOGLE_AUTH_SUCCESS',
+            accessToken: accessToken,
+            idToken: idToken
+          }, window.location.origin);
+          window.close();
+        }
+      } else if (error) {
+        if (window.opener) {
+          window.opener.postMessage({
+            type: 'GOOGLE_AUTH_ERROR',
+            error: error
+          }, window.location.origin);
+          window.close();
+        }
+      } else {
+        // If opened directly without hash
+        setTimeout(function() {
+          if (window.opener) {
+            window.opener.postMessage({ type: 'GOOGLE_POPUP_CLOSED' }, window.location.origin);
+          }
+          window.close();
+        }, 1200);
+      }
+    })();
+  </script>
+</body>
+</html>

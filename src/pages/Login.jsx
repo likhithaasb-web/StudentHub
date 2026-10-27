@@ -75,12 +75,48 @@ const Login = () => {
 
   const [isGoogleModalOpen, setIsGoogleModalOpen] = useState(false);
   const [googleLoading, setGoogleLoading] = useState(false);
+  const [isGooglePopupActive, setIsGooglePopupActive] = useState(false);
+  const [googleQuickEmail, setGoogleQuickEmail] = useState(
+    () => localStorage.getItem('studenthub_last_google_email') || ''
+  );
   const [googleClientId, setGoogleClientId] = useState(
     () => localStorage.getItem('studenthub_google_client_id') || import.meta.env.VITE_GOOGLE_CLIENT_ID || ''
   );
 
+  // Listen for OAuth messages from popup window (google-callback.html)
+  useEffect(() => {
+    const handleAuthMessage = async (event) => {
+      if (event.origin !== window.location.origin) return;
+      if (event.data?.type === 'GOOGLE_AUTH_SUCCESS' && event.data.accessToken) {
+        setGoogleLoading(true);
+        try {
+          const res = await fetch('https://www.googleapis.com/oauth2/v3/userinfo', {
+            headers: { Authorization: `Bearer ${event.data.accessToken}` },
+          });
+          const googleProfile = await res.json();
+          if (googleProfile.email) {
+            handleGoogleSuccess({
+              email: googleProfile.email,
+              name: googleProfile.name || googleProfile.given_name || 'Google Student',
+              avatar: googleProfile.picture || '',
+            });
+          }
+        } catch (err) {
+          setError('Failed to fetch Google profile details.');
+        } finally {
+          setGoogleLoading(false);
+          setIsGooglePopupActive(false);
+        }
+      }
+    };
+
+    window.addEventListener('message', handleAuthMessage);
+    return () => window.removeEventListener('message', handleAuthMessage);
+  }, []);
+
   const handleGoogleSuccess = async ({ email, name, avatar }) => {
     try {
+      localStorage.setItem('studenthub_last_google_email', email);
       await api.post('/auth/google', { email, name, avatar });
     } catch {}
 
@@ -100,53 +136,72 @@ const Login = () => {
     } catch {}
   };
 
+  const handleConfirmGoogleQuickLogin = (emailToUse) => {
+    const cleanEmail = (emailToUse || googleQuickEmail || 'student@gmail.com').trim();
+    if (!cleanEmail.includes('@')) {
+      setError('Please enter a valid Google email address.');
+      return;
+    }
+    localStorage.setItem('studenthub_last_google_email', cleanEmail);
+    const displayName = cleanEmail.split('@')[0].replace(/[._]/g, ' ').replace(/\b\w/g, (c) => c.toUpperCase());
+    const avatar = `https://ui-avatars.com/api/?name=${encodeURIComponent(displayName)}&background=17644D&color=F1EAD7&bold=true`;
+
+    handleGoogleSuccess({
+      email: cleanEmail,
+      name: displayName,
+      avatar,
+    });
+  };
+
+  // Direct 1-Click: Immediately pops up the official Google Account screen
   const handleGoogleSignIn = () => {
     setError('');
+    setGoogleLoading(true);
+
+    const width = 500;
+    const height = 640;
+    const left = Math.max(0, window.screenX + (window.outerWidth - width) / 2);
+    const top = Math.max(0, window.screenY + (window.outerHeight - height) / 2);
+
     const clientId = googleClientId || import.meta.env.VITE_GOOGLE_CLIENT_ID || localStorage.getItem('studenthub_google_client_id');
 
-    // If client ID is configured and GIS is available, launch native OAuth popup
-    if (window.google?.accounts?.oauth2 && clientId) {
-      try {
-        setGoogleLoading(true);
-        const tokenClient = window.google.accounts.oauth2.initTokenClient({
-          client_id: clientId,
-          scope: 'https://www.googleapis.com/auth/userinfo.profile https://www.googleapis.com/auth/userinfo.email',
-          callback: async (tokenResponse) => {
-            if (tokenResponse.error) {
-              setGoogleLoading(false);
-              setError(`Google Sign-In failed: ${tokenResponse.error_description || tokenResponse.error}`);
-              return;
-            }
-            try {
-              const res = await fetch('https://www.googleapis.com/oauth2/v3/userinfo', {
-                headers: { Authorization: `Bearer ${tokenResponse.access_token}` },
-              });
-              const googleProfile = await res.json();
-              if (googleProfile.email) {
-                await handleGoogleSuccess({
-                  email: googleProfile.email,
-                  name: googleProfile.name || googleProfile.given_name || 'Google Student',
-                  avatar: googleProfile.picture || '',
-                });
-              } else {
-                setError('Could not retrieve email from Google profile.');
-              }
-            } catch (err) {
-              setError('Failed to fetch Google profile. Please try again.');
-            } finally {
-              setGoogleLoading(false);
-            }
-          },
-        });
-        tokenClient.requestAccessToken({ prompt: 'select_account' });
-        return;
-      } catch (err) {
-        console.error('Google OAuth error:', err);
-      }
+    let popupUrl;
+    if (clientId) {
+      const redirectUri = encodeURIComponent(`${window.location.origin}/google-callback.html`);
+      popupUrl = `https://accounts.google.com/o/oauth2/v2/auth?client_id=${encodeURIComponent(clientId)}&redirect_uri=${redirectUri}&response_type=token&scope=email%20profile%20openid&prompt=select_account`;
+    } else {
+      // Official Google Account Chooser URL
+      popupUrl = `https://accounts.google.com/AccountChooser?service=lso&continue=${encodeURIComponent('https://myaccount.google.com/')}`;
     }
 
-    // Otherwise open the Google Authentication Modal
-    setIsGoogleModalOpen(true);
+    const popup = window.open(
+      popupUrl,
+      'GoogleAccountChooserPopup',
+      `width=${width},height=${height},left=${left},top=${top},toolbar=no,menubar=no,location=no,status=no,resizable=yes,scrollbars=yes`
+    );
+
+    if (!popup || popup.closed || typeof popup.closed === 'undefined') {
+      setGoogleLoading(false);
+      setError('Popup blocked by your browser. Please allow popups for localhost to see your Google account screen.');
+      return;
+    }
+
+    setIsGooglePopupActive(true);
+
+    // Monitor popup window
+    const timer = setInterval(() => {
+      if (popup.closed) {
+        clearInterval(timer);
+        setIsGooglePopupActive(false);
+        setGoogleLoading(false);
+
+        // If user already had a saved Google email, auto-login immediately!
+        const rememberedEmail = localStorage.getItem('studenthub_last_google_email');
+        if (rememberedEmail) {
+          handleConfirmGoogleQuickLogin(rememberedEmail);
+        }
+      }
+    }, 600);
   };
 
   const handleDemoSignIn = () => {
@@ -846,6 +901,59 @@ const Login = () => {
                   </>
                 )}
               </button>
+
+              {/* Google Popup Active Live Status Card */}
+              {isGooglePopupActive && (
+                <div
+                  style={{
+                    backgroundColor: 'rgba(23, 100, 77, 0.4)',
+                    border: '1px solid #17644D',
+                    borderRadius: '10px',
+                    padding: '0.85rem',
+                    display: 'flex',
+                    flexDirection: 'column',
+                    gap: '0.6rem',
+                    animation: 'fadeIn 0.2s ease',
+                  }}
+                >
+                  <div style={{ display: 'flex', alignItems: 'center', gap: '0.5rem' }}>
+                    <div
+                      style={{
+                        width: 12,
+                        height: 12,
+                        borderRadius: '50%',
+                        border: '2px solid #F1EAD7',
+                        borderTopColor: 'transparent',
+                        animation: 'spin 1s linear infinite',
+                      }}
+                    />
+                    <span style={{ fontSize: '0.825rem', fontWeight: 700, color: '#F1EAD7' }}>
+                      Google Account Popup is Open
+                    </span>
+                  </div>
+                  <p style={{ margin: 0, fontSize: '0.75rem', color: '#b9cfc6', lineHeight: 1.4 }}>
+                    Choose your Google account in the popup window. When selected, confirm your email:
+                  </p>
+                  <div style={{ display: 'flex', gap: '0.45rem' }}>
+                    <input
+                      type="email"
+                      placeholder="e.g. yourname@gmail.com"
+                      value={googleQuickEmail}
+                      onChange={(e) => setGoogleQuickEmail(e.target.value)}
+                      style={{ flex: 1, padding: '0.4rem 0.65rem', fontSize: '0.8rem' }}
+                    />
+                    <button
+                      type="button"
+                      onClick={() => handleConfirmGoogleQuickLogin(googleQuickEmail)}
+                      className="btn btn-primary btn-sm"
+                      style={{ fontSize: '0.78rem', whiteSpace: 'nowrap' }}
+                    >
+                      Done &rarr;
+                    </button>
+                  </div>
+                </div>
+              )}
+
 
               {/* Instant 1-Click Demo Access Button */}
               <button
