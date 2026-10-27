@@ -157,8 +157,8 @@ const ResumeEditor = ({
             style={{
               gap: '0.35rem',
               fontSize: '0.8rem',
-              color: 'var(--accent-gold, #DFD6AE)',
-              borderColor: 'rgba(223, 214, 174, 0.4)',
+              color: 'var(--accent-cream, #f0eada)',
+              borderColor: 'rgba(240, 234, 218, 0.4)',
             }}
             title="Share live link with recruiters"
           >

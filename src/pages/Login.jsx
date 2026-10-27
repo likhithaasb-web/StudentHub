@@ -81,11 +81,11 @@ const Login = () => {
       style={{
         minHeight: '100vh',
         width: '100%',
-        backgroundColor: '#111d1f',
+        backgroundColor: '#180712',
         backgroundImage: `
-          radial-gradient(circle at 10% 15%, rgba(39, 66, 69, 0.7) 0%, transparent 45%),
-          radial-gradient(circle at 85% 80%, rgba(39, 66, 69, 0.5) 0%, transparent 45%),
-          radial-gradient(circle at 50% 50%, rgba(223, 214, 174, 0.03) 0%, transparent 60%)
+          radial-gradient(circle at 10% 15%, rgba(133, 50, 92, 0.7) 0%, transparent 45%),
+          radial-gradient(circle at 85% 80%, rgba(133, 50, 92, 0.5) 0%, transparent 45%),
+          radial-gradient(circle at 50% 50%, rgba(240, 234, 218, 0.03) 0%, transparent 60%)
         `,
         color: '#F7F5EC',
         display: 'flex',
@@ -106,7 +106,7 @@ const Login = () => {
           width: 500,
           height: 500,
           borderRadius: '50%',
-          background: 'radial-gradient(circle, rgba(39, 66, 69, 0.45) 0%, transparent 70%)',
+          background: 'radial-gradient(circle, rgba(133, 50, 92, 0.45) 0%, transparent 70%)',
           pointerEvents: 'none',
           filter: 'blur(50px)',
         }}
@@ -138,12 +138,12 @@ const Login = () => {
                 width: 44,
                 height: 44,
                 borderRadius: '12px',
-                backgroundColor: '#DFD6AE',
-                color: '#274245',
+                backgroundColor: '#f0eada',
+                color: '#85325c',
                 display: 'flex',
                 alignItems: 'center',
                 justifyContent: 'center',
-                boxShadow: '0 4px 16px rgba(223, 214, 174, 0.35)',
+                boxShadow: '0 4px 16px rgba(240, 234, 218, 0.35)',
               }}
             >
               <BookOpen size={24} strokeWidth={2.5} />
@@ -156,7 +156,7 @@ const Login = () => {
                 style={{
                   fontSize: '0.65rem',
                   fontWeight: 700,
-                  color: '#9bb3b4',
+                  color: '#dfc6d4',
                   letterSpacing: '0.14em',
                   textTransform: 'uppercase',
                   marginTop: 2,
@@ -184,7 +184,7 @@ const Login = () => {
             <p
               style={{
                 fontSize: '1rem',
-                color: '#9bb3b4',
+                color: '#dfc6d4',
                 lineHeight: 1.5,
                 maxWidth: 480,
                 margin: 0,
@@ -197,11 +197,11 @@ const Login = () => {
           {/* Mini Dashboard Preview Card */}
           <div
             style={{
-              background: 'rgba(23, 40, 42, 0.85)',
-              border: '1px solid rgba(223, 214, 174, 0.16)',
+              background: 'rgba(38, 13, 26, 0.85)',
+              border: '1px solid rgba(240, 234, 218, 0.16)',
               borderRadius: '20px',
               padding: '1.25rem',
-              boxShadow: '0 24px 60px -15px rgba(0, 0, 0, 0.7), 0 0 35px rgba(39, 66, 69, 0.45)',
+              boxShadow: '0 24px 60px -15px rgba(0, 0, 0, 0.7), 0 0 35px rgba(133, 50, 92, 0.45)',
               backdropFilter: 'blur(16px)',
               display: 'grid',
               gridTemplateColumns: '120px 1fr',
@@ -215,7 +215,7 @@ const Login = () => {
             {/* Left Mini Sidebar */}
             <div
               style={{
-                borderRight: '1px solid rgba(56, 87, 92, 0.5)',
+                borderRight: '1px solid rgba(168, 80, 125, 0.5)',
                 paddingRight: '0.75rem',
                 display: 'flex',
                 flexDirection: 'column',
@@ -227,8 +227,8 @@ const Login = () => {
                   display: 'flex',
                   alignItems: 'center',
                   gap: '0.4rem',
-                  backgroundColor: '#DFD6AE',
-                  color: '#152426',
+                  backgroundColor: '#f0eada',
+                  color: '#85325c',
                   padding: '0.35rem 0.6rem',
                   borderRadius: '6px',
                   fontWeight: 700,
@@ -253,7 +253,7 @@ const Login = () => {
                     display: 'flex',
                     alignItems: 'center',
                     gap: '0.4rem',
-                    color: '#8da6a7',
+                    color: '#dfc6d4',
                     padding: '0.3rem 0.6rem',
                     fontSize: '0.7rem',
                     fontWeight: 500,
@@ -273,7 +273,7 @@ const Login = () => {
                   <div style={{ fontSize: '0.85rem', fontWeight: 800, color: '#F7F5EC' }}>
                     Good evening, Alex!
                   </div>
-                  <div style={{ fontSize: '0.65rem', color: '#8da6a7' }}>
+                  <div style={{ fontSize: '0.65rem', color: '#dfc6d4' }}>
                     Keep going — you're making great progress.
                   </div>
                 </div>
@@ -283,11 +283,11 @@ const Login = () => {
                     alignItems: 'center',
                     gap: 3,
                     fontSize: '0.62rem',
-                    color: '#8da6a7',
-                    backgroundColor: 'rgba(39, 66, 69, 0.6)',
+                    color: '#dfc6d4',
+                    backgroundColor: 'rgba(133, 50, 92, 0.6)',
                     padding: '0.15rem 0.4rem',
                     borderRadius: '4px',
-                    border: '1px solid rgba(56, 87, 92, 0.4)',
+                    border: '1px solid rgba(168, 80, 125, 0.4)',
                   }}
                 >
                   <Calendar size={9} /> Mon, Oct 26, 2026
@@ -296,28 +296,28 @@ const Login = () => {
 
               {/* 4 Mini Stat Badges */}
               <div style={{ display: 'grid', gridTemplateColumns: 'repeat(4, 1fr)', gap: '0.45rem' }}>
-                <div style={{ backgroundColor: 'rgba(39, 66, 69, 0.5)', border: '1px solid rgba(56, 87, 92, 0.5)', borderRadius: '8px', padding: '0.4rem', textAlign: 'center' }}>
-                  <div style={{ fontSize: '0.85rem', fontWeight: 800, color: '#DFD6AE' }}>5</div>
-                  <div style={{ fontSize: '0.55rem', color: '#8da6a7' }}>Pending Tasks</div>
+                <div style={{ backgroundColor: 'rgba(133, 50, 92, 0.5)', border: '1px solid rgba(168, 80, 125, 0.5)', borderRadius: '8px', padding: '0.4rem', textAlign: 'center' }}>
+                  <div style={{ fontSize: '0.85rem', fontWeight: 800, color: '#f0eada' }}>5</div>
+                  <div style={{ fontSize: '0.55rem', color: '#dfc6d4' }}>Pending Tasks</div>
                 </div>
-                <div style={{ backgroundColor: 'rgba(39, 66, 69, 0.5)', border: '1px solid rgba(56, 87, 92, 0.5)', borderRadius: '8px', padding: '0.4rem', textAlign: 'center' }}>
+                <div style={{ backgroundColor: 'rgba(133, 50, 92, 0.5)', border: '1px solid rgba(168, 80, 125, 0.5)', borderRadius: '8px', padding: '0.4rem', textAlign: 'center' }}>
                   <div style={{ fontSize: '0.85rem', fontWeight: 800, color: '#67e8f9' }}>3</div>
-                  <div style={{ fontSize: '0.55rem', color: '#8da6a7' }}>Upcoming Exams</div>
+                  <div style={{ fontSize: '0.55rem', color: '#dfc6d4' }}>Upcoming Exams</div>
                 </div>
-                <div style={{ backgroundColor: 'rgba(39, 66, 69, 0.5)', border: '1px solid rgba(56, 87, 92, 0.5)', borderRadius: '8px', padding: '0.4rem', textAlign: 'center' }}>
+                <div style={{ backgroundColor: 'rgba(133, 50, 92, 0.5)', border: '1px solid rgba(168, 80, 125, 0.5)', borderRadius: '8px', padding: '0.4rem', textAlign: 'center' }}>
                   <div style={{ fontSize: '0.85rem', fontWeight: 800, color: '#34d399' }}>82.1%</div>
-                  <div style={{ fontSize: '0.55rem', color: '#8da6a7' }}>Attendance</div>
+                  <div style={{ fontSize: '0.55rem', color: '#dfc6d4' }}>Attendance</div>
                 </div>
-                <div style={{ backgroundColor: 'rgba(39, 66, 69, 0.5)', border: '1px solid rgba(56, 87, 92, 0.5)', borderRadius: '8px', padding: '0.4rem', textAlign: 'center' }}>
-                  <div style={{ fontSize: '0.85rem', fontWeight: 800, color: '#DFD6AE' }}>12</div>
-                  <div style={{ fontSize: '0.55rem', color: '#8da6a7' }}>Notes</div>
+                <div style={{ backgroundColor: 'rgba(133, 50, 92, 0.5)', border: '1px solid rgba(168, 80, 125, 0.5)', borderRadius: '8px', padding: '0.4rem', textAlign: 'center' }}>
+                  <div style={{ fontSize: '0.85rem', fontWeight: 800, color: '#f0eada' }}>12</div>
+                  <div style={{ fontSize: '0.55rem', color: '#dfc6d4' }}>Notes</div>
                 </div>
               </div>
 
               {/* Two Mini Charts Side-by-Side */}
               <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '0.55rem' }}>
                 {/* Mini Bar Chart */}
-                <div style={{ backgroundColor: 'rgba(39, 66, 69, 0.4)', borderRadius: '8px', padding: '0.5rem', border: '1px solid rgba(56, 87, 92, 0.4)' }}>
+                <div style={{ backgroundColor: 'rgba(133, 50, 92, 0.4)', borderRadius: '8px', padding: '0.5rem', border: '1px solid rgba(168, 80, 125, 0.4)' }}>
                   <div style={{ fontSize: '0.62rem', fontWeight: 700, color: '#F7F5EC', marginBottom: 4 }}>
                     Study Hours (Past 7 Days)
                   </div>
@@ -328,7 +328,7 @@ const Login = () => {
                         style={{
                           width: 8,
                           height: `${val}%`,
-                          backgroundColor: '#DFD6AE',
+                          backgroundColor: '#f0eada',
                           borderRadius: '2px 2px 0 0',
                         }}
                       />
@@ -337,13 +337,13 @@ const Login = () => {
                 </div>
 
                 {/* Mini Donut Chart */}
-                <div style={{ backgroundColor: 'rgba(39, 66, 69, 0.4)', borderRadius: '8px', padding: '0.5rem', border: '1px solid rgba(56, 87, 92, 0.4)', display: 'flex', alignItems: 'center', justifyContent: 'space-between' }}>
+                <div style={{ backgroundColor: 'rgba(133, 50, 92, 0.4)', borderRadius: '8px', padding: '0.5rem', border: '1px solid rgba(168, 80, 125, 0.4)', display: 'flex', alignItems: 'center', justifyContent: 'space-between' }}>
                   <div>
                     <div style={{ fontSize: '0.62rem', fontWeight: 700, color: '#F7F5EC', marginBottom: 2 }}>
                       Task Completion
                     </div>
                     <div style={{ fontSize: '0.55rem', color: '#34d399' }}>• Completed 1</div>
-                    <div style={{ fontSize: '0.55rem', color: '#DFD6AE' }}>• In Progress 1</div>
+                    <div style={{ fontSize: '0.55rem', color: '#f0eada' }}>• In Progress 1</div>
                     <div style={{ fontSize: '0.55rem', color: '#e09f58' }}>• Pending 4</div>
                   </div>
                   <div
@@ -351,7 +351,7 @@ const Login = () => {
                       width: 36,
                       height: 36,
                       borderRadius: '50%',
-                      background: 'conic-gradient(#34d399 0% 17%, #DFD6AE 17% 40%, #e09f58 40% 100%)',
+                      background: 'conic-gradient(#34d399 0% 17%, #f0eada 17% 40%, #e09f58 40% 100%)',
                       display: 'flex',
                       alignItems: 'center',
                       justifyContent: 'center',
@@ -362,7 +362,7 @@ const Login = () => {
                         width: 24,
                         height: 24,
                         borderRadius: '50%',
-                        backgroundColor: '#1c3134',
+                        backgroundColor: '#270e1d',
                         display: 'flex',
                         alignItems: 'center',
                         justifyContent: 'center',
@@ -379,20 +379,20 @@ const Login = () => {
 
               {/* Three Mini Cards */}
               <div style={{ display: 'grid', gridTemplateColumns: 'repeat(3, 1fr)', gap: '0.45rem' }}>
-                <div style={{ backgroundColor: 'rgba(39, 66, 69, 0.35)', borderRadius: '6px', padding: '0.35rem 0.45rem', fontSize: '0.55rem', border: '1px solid rgba(56, 87, 92, 0.3)' }}>
+                <div style={{ backgroundColor: 'rgba(133, 50, 92, 0.35)', borderRadius: '6px', padding: '0.35rem 0.45rem', fontSize: '0.55rem', border: '1px solid rgba(168, 80, 125, 0.3)' }}>
                   <strong style={{ color: '#F7F5EC', display: 'block', marginBottom: 2 }}>Today's Schedule</strong>
-                  <div style={{ color: '#8da6a7' }}>• Data Structures</div>
-                  <div style={{ color: '#8da6a7' }}>• Web Dev Lab</div>
+                  <div style={{ color: '#dfc6d4' }}>• Data Structures</div>
+                  <div style={{ color: '#dfc6d4' }}>• Web Dev Lab</div>
                 </div>
-                <div style={{ backgroundColor: 'rgba(39, 66, 69, 0.35)', borderRadius: '6px', padding: '0.35rem 0.45rem', fontSize: '0.55rem', border: '1px solid rgba(56, 87, 92, 0.3)' }}>
+                <div style={{ backgroundColor: 'rgba(133, 50, 92, 0.35)', borderRadius: '6px', padding: '0.35rem 0.45rem', fontSize: '0.55rem', border: '1px solid rgba(168, 80, 125, 0.3)' }}>
                   <strong style={{ color: '#F7F5EC', display: 'block', marginBottom: 2 }}>Deadlines</strong>
-                  <div style={{ color: '#8da6a7' }}>• DDA Assignment (3d)</div>
-                  <div style={{ color: '#8da6a7' }}>• OS Report (5d)</div>
+                  <div style={{ color: '#dfc6d4' }}>• DDA Assignment (3d)</div>
+                  <div style={{ color: '#dfc6d4' }}>• OS Report (5d)</div>
                 </div>
-                <div style={{ backgroundColor: 'rgba(39, 66, 69, 0.35)', borderRadius: '6px', padding: '0.35rem 0.45rem', fontSize: '0.55rem', border: '1px solid rgba(56, 87, 92, 0.3)' }}>
+                <div style={{ backgroundColor: 'rgba(133, 50, 92, 0.35)', borderRadius: '6px', padding: '0.35rem 0.45rem', fontSize: '0.55rem', border: '1px solid rgba(168, 80, 125, 0.3)' }}>
                   <strong style={{ color: '#F7F5EC', display: 'block', marginBottom: 2 }}>Recent Notes</strong>
-                  <div style={{ color: '#8da6a7' }}>• Dynamic Prog</div>
-                  <div style={{ color: '#8da6a7' }}>• Database Norm</div>
+                  <div style={{ color: '#dfc6d4' }}>• Dynamic Prog</div>
+                  <div style={{ color: '#dfc6d4' }}>• Database Norm</div>
                 </div>
               </div>
             </div>
@@ -400,7 +400,7 @@ const Login = () => {
 
           {/* Bottom Flourish / Slogan */}
           <div style={{ display: 'flex', alignItems: 'center', gap: '0.75rem', marginTop: '0.5rem' }}>
-            <svg width="42" height="24" viewBox="0 0 42 24" fill="none" style={{ color: '#DFD6AE' }}>
+            <svg width="42" height="24" viewBox="0 0 42 24" fill="none" style={{ color: '#f0eada' }}>
               <path
                 d="M4 4C12 20 22 20 38 12M38 12L32 9M38 12L34 17"
                 stroke="currentColor"
@@ -413,7 +413,7 @@ const Login = () => {
               style={{
                 fontSize: '0.85rem',
                 fontWeight: 600,
-                color: '#DFD6AE',
+                color: '#f0eada',
                 letterSpacing: '0.08em',
               }}
             >
@@ -430,11 +430,11 @@ const Login = () => {
             style={{
               width: '100%',
               maxWidth: 420,
-              backgroundColor: 'rgba(28, 49, 52, 0.75)',
-              border: '1px solid rgba(223, 214, 174, 0.22)',
+              backgroundColor: 'rgba(45, 16, 32, 0.75)',
+              border: '1px solid rgba(240, 234, 218, 0.22)',
               borderRadius: '24px',
               padding: '2.5rem 2.25rem',
-              boxShadow: '0 25px 60px rgba(0, 0, 0, 0.55), 0 0 30px rgba(39, 66, 69, 0.3)',
+              boxShadow: '0 25px 60px rgba(0, 0, 0, 0.55), 0 0 30px rgba(133, 50, 92, 0.3)',
               backdropFilter: 'blur(20px)',
               position: 'relative',
             }}
@@ -446,12 +446,12 @@ const Login = () => {
                   width: 48,
                   height: 48,
                   borderRadius: '14px',
-                  backgroundColor: '#DFD6AE',
-                  color: '#274245',
+                  backgroundColor: '#f0eada',
+                  color: '#85325c',
                   display: 'inline-flex',
                   alignItems: 'center',
                   justifyContent: 'center',
-                  boxShadow: '0 4px 18px rgba(223, 214, 174, 0.35)',
+                  boxShadow: '0 4px 18px rgba(240, 234, 218, 0.35)',
                   marginBottom: '0.65rem',
                 }}
               >
@@ -464,7 +464,7 @@ const Login = () => {
                 style={{
                   fontSize: '0.6rem',
                   fontWeight: 700,
-                  color: '#9bb3b4',
+                  color: '#dfc6d4',
                   letterSpacing: '0.14em',
                   textTransform: 'uppercase',
                   marginTop: 2,
@@ -479,7 +479,7 @@ const Login = () => {
               <h2 style={{ fontSize: '1.75rem', fontWeight: 800, color: '#F7F5EC', margin: '0 0 0.35rem 0' }}>
                 {isSignUp ? 'Create account' : 'Welcome back'}
               </h2>
-              <p style={{ fontSize: '0.875rem', color: '#9bb3b4', margin: 0 }}>
+              <p style={{ fontSize: '0.875rem', color: '#dfc6d4', margin: 0 }}>
                 {isSignUp ? 'Join StudentHub to organize your courses' : 'Sign in to continue your progress.'}
               </p>
             </div>
@@ -507,11 +507,11 @@ const Login = () => {
               {isSignUp && (
                 <>
                   <div>
-                    <label style={{ display: 'block', fontSize: '0.825rem', fontWeight: 600, color: '#DFD6AE', marginBottom: '0.4rem' }}>
+                    <label style={{ display: 'block', fontSize: '0.825rem', fontWeight: 600, color: '#f0eada', marginBottom: '0.4rem' }}>
                       Full Name
                     </label>
                     <div style={{ position: 'relative' }}>
-                      <User size={16} style={{ position: 'absolute', left: 14, top: '50%', transform: 'translateY(-50%)', color: '#8da6a7' }} />
+                      <User size={16} style={{ position: 'absolute', left: 14, top: '50%', transform: 'translateY(-50%)', color: '#dfc6d4' }} />
                       <input
                         type="text"
                         placeholder="e.g. Alex Morgan"
@@ -520,8 +520,8 @@ const Login = () => {
                         required
                         style={{
                           paddingLeft: '2.5rem',
-                          backgroundColor: 'rgba(23, 40, 43, 0.85)',
-                          borderColor: 'rgba(56, 87, 92, 0.7)',
+                          backgroundColor: 'rgba(38, 13, 26, 0.85)',
+                          borderColor: 'rgba(168, 80, 125, 0.7)',
                           color: '#F7F5EC',
                           borderRadius: '10px',
                         }}
@@ -530,11 +530,11 @@ const Login = () => {
                   </div>
 
                   <div>
-                    <label style={{ display: 'block', fontSize: '0.825rem', fontWeight: 600, color: '#DFD6AE', marginBottom: '0.4rem' }}>
+                    <label style={{ display: 'block', fontSize: '0.825rem', fontWeight: 600, color: '#f0eada', marginBottom: '0.4rem' }}>
                       College / University Name
                     </label>
                     <div style={{ position: 'relative' }}>
-                      <School size={16} style={{ position: 'absolute', left: 14, top: '50%', transform: 'translateY(-50%)', color: '#8da6a7' }} />
+                      <School size={16} style={{ position: 'absolute', left: 14, top: '50%', transform: 'translateY(-50%)', color: '#dfc6d4' }} />
                       <input
                         type="text"
                         placeholder="e.g. State Tech University"
@@ -542,8 +542,8 @@ const Login = () => {
                         onChange={(e) => setFormData({ ...formData, college: e.target.value })}
                         style={{
                           paddingLeft: '2.5rem',
-                          backgroundColor: 'rgba(23, 40, 43, 0.85)',
-                          borderColor: 'rgba(56, 87, 92, 0.7)',
+                          backgroundColor: 'rgba(38, 13, 26, 0.85)',
+                          borderColor: 'rgba(168, 80, 125, 0.7)',
                           color: '#F7F5EC',
                           borderRadius: '10px',
                         }}
@@ -555,7 +555,7 @@ const Login = () => {
 
               {/* Email Field */}
               <div>
-                <label style={{ display: 'block', fontSize: '0.825rem', fontWeight: 600, color: '#DFD6AE', marginBottom: '0.4rem' }}>
+                <label style={{ display: 'block', fontSize: '0.825rem', fontWeight: 600, color: '#f0eada', marginBottom: '0.4rem' }}>
                   Email address
                 </label>
                 <div style={{ position: 'relative' }}>
@@ -566,7 +566,7 @@ const Login = () => {
                       left: 14,
                       top: '50%',
                       transform: 'translateY(-50%)',
-                      color: '#8da6a7',
+                      color: '#dfc6d4',
                     }}
                   />
                   <input
@@ -577,8 +577,8 @@ const Login = () => {
                     required
                     style={{
                       paddingLeft: '2.5rem',
-                      backgroundColor: 'rgba(23, 40, 43, 0.85)',
-                      borderColor: 'rgba(56, 87, 92, 0.7)',
+                      backgroundColor: 'rgba(38, 13, 26, 0.85)',
+                      borderColor: 'rgba(168, 80, 125, 0.7)',
                       color: '#F7F5EC',
                       borderRadius: '10px',
                     }}
@@ -588,7 +588,7 @@ const Login = () => {
 
               {/* Password Field */}
               <div>
-                <label style={{ display: 'block', fontSize: '0.825rem', fontWeight: 600, color: '#DFD6AE', marginBottom: '0.4rem' }}>
+                <label style={{ display: 'block', fontSize: '0.825rem', fontWeight: 600, color: '#f0eada', marginBottom: '0.4rem' }}>
                   Password
                 </label>
                 <div style={{ position: 'relative' }}>
@@ -599,7 +599,7 @@ const Login = () => {
                       left: 14,
                       top: '50%',
                       transform: 'translateY(-50%)',
-                      color: '#8da6a7',
+                      color: '#dfc6d4',
                     }}
                   />
                   <input
@@ -611,8 +611,8 @@ const Login = () => {
                     style={{
                       paddingLeft: '2.5rem',
                       paddingRight: '2.5rem',
-                      backgroundColor: 'rgba(23, 40, 43, 0.85)',
-                      borderColor: 'rgba(56, 87, 92, 0.7)',
+                      backgroundColor: 'rgba(38, 13, 26, 0.85)',
+                      borderColor: 'rgba(168, 80, 125, 0.7)',
                       color: '#F7F5EC',
                       borderRadius: '10px',
                     }}
@@ -625,7 +625,7 @@ const Login = () => {
                       right: 12,
                       top: '50%',
                       transform: 'translateY(-50%)',
-                      color: '#8da6a7',
+                      color: '#dfc6d4',
                       background: 'none',
                       border: 'none',
                       cursor: 'pointer',
@@ -641,12 +641,12 @@ const Login = () => {
               {/* Remember me & Forgot Password */}
               {!isSignUp && (
                 <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', fontSize: '0.825rem' }}>
-                  <label style={{ display: 'flex', alignItems: 'center', gap: '0.45rem', cursor: 'pointer', color: '#9bb3b4' }}>
+                  <label style={{ display: 'flex', alignItems: 'center', gap: '0.45rem', cursor: 'pointer', color: '#dfc6d4' }}>
                     <input
                       type="checkbox"
                       checked={formData.rememberMe}
                       onChange={(e) => setFormData({ ...formData, rememberMe: e.target.checked })}
-                      style={{ width: 'auto', accentColor: '#DFD6AE', cursor: 'pointer' }}
+                      style={{ width: 'auto', accentColor: '#f0eada', cursor: 'pointer' }}
                     />
                     <span>Remember me</span>
                   </label>
@@ -667,8 +667,8 @@ const Login = () => {
                 style={{
                   width: '100%',
                   padding: '0.85rem',
-                  backgroundColor: '#DFD6AE',
-                  color: '#152426',
+                  backgroundColor: '#f0eada',
+                  color: '#85325c',
                   borderRadius: '10px',
                   fontWeight: 700,
                   fontSize: '0.98rem',
@@ -678,7 +678,7 @@ const Login = () => {
                   alignItems: 'center',
                   justifyContent: 'center',
                   gap: '0.5rem',
-                  boxShadow: '0 4px 18px rgba(223, 214, 174, 0.35)',
+                  boxShadow: '0 4px 18px rgba(240, 234, 218, 0.35)',
                   transition: 'transform 0.15s ease, opacity 0.15s ease',
                   marginTop: '0.25rem',
                 }}
@@ -700,9 +700,9 @@ const Login = () => {
                   margin: '0.35rem 0',
                 }}
               >
-                <div style={{ flex: 1, height: '1px', backgroundColor: 'rgba(56, 87, 92, 0.5)' }} />
+                <div style={{ flex: 1, height: '1px', backgroundColor: 'rgba(168, 80, 125, 0.5)' }} />
                 <span>or continue with</span>
-                <div style={{ flex: 1, height: '1px', backgroundColor: 'rgba(56, 87, 92, 0.5)' }} />
+                <div style={{ flex: 1, height: '1px', backgroundColor: 'rgba(168, 80, 125, 0.5)' }} />
               </div>
 
               {/* Google Sign In Button */}
@@ -712,8 +712,8 @@ const Login = () => {
                 style={{
                   width: '100%',
                   padding: '0.75rem',
-                  backgroundColor: 'rgba(23, 40, 43, 0.8)',
-                  border: '1px solid rgba(56, 87, 92, 0.7)',
+                  backgroundColor: 'rgba(38, 13, 26, 0.8)',
+                  border: '1px solid rgba(168, 80, 125, 0.7)',
                   borderRadius: '10px',
                   color: '#F7F5EC',
                   fontWeight: 600,
@@ -725,8 +725,8 @@ const Login = () => {
                   gap: '0.65rem',
                   transition: 'background 0.15s ease',
                 }}
-                onMouseEnter={(e) => (e.currentTarget.style.backgroundColor = 'rgba(39, 66, 69, 0.8)')}
-                onMouseLeave={(e) => (e.currentTarget.style.backgroundColor = 'rgba(23, 40, 43, 0.8)')}
+                onMouseEnter={(e) => (e.currentTarget.style.backgroundColor = 'rgba(133, 50, 92, 0.8)')}
+                onMouseLeave={(e) => (e.currentTarget.style.backgroundColor = 'rgba(38, 13, 26, 0.8)')}
               >
                 {/* SVG Google 'G' Logo */}
                 <svg width="18" height="18" viewBox="0 0 24 24">
@@ -758,9 +758,9 @@ const Login = () => {
                   width: '100%',
                   padding: '0.65rem',
                   backgroundColor: 'transparent',
-                  border: '1px dashed rgba(223, 214, 174, 0.4)',
+                  border: '1px dashed rgba(240, 234, 218, 0.4)',
                   borderRadius: '10px',
-                  color: '#DFD6AE',
+                  color: '#f0eada',
                   fontWeight: 600,
                   fontSize: '0.85rem',
                   cursor: 'pointer',
@@ -770,7 +770,7 @@ const Login = () => {
                   gap: '0.45rem',
                   transition: 'background 0.15s ease',
                 }}
-                onMouseEnter={(e) => (e.currentTarget.style.backgroundColor = 'rgba(223, 214, 174, 0.1)')}
+                onMouseEnter={(e) => (e.currentTarget.style.backgroundColor = 'rgba(240, 234, 218, 0.1)')}
                 onMouseLeave={(e) => (e.currentTarget.style.backgroundColor = 'transparent')}
               >
                 <Sparkles size={14} /> Instant 1-Click Demo Login
@@ -778,7 +778,7 @@ const Login = () => {
             </form>
 
             {/* Switch between Sign In / Sign Up */}
-            <div style={{ textAlign: 'center', marginTop: '1.5rem', fontSize: '0.85rem', color: '#9bb3b4' }}>
+            <div style={{ textAlign: 'center', marginTop: '1.5rem', fontSize: '0.85rem', color: '#dfc6d4' }}>
               {isSignUp ? (
                 <>
                   Already have an account?{' '}
@@ -837,7 +837,7 @@ const Login = () => {
           fontSize: '0.8rem',
           color: '#6e8a8c',
           paddingTop: '1.25rem',
-          borderTop: '1px solid rgba(56, 87, 92, 0.3)',
+          borderTop: '1px solid rgba(168, 80, 125, 0.3)',
         }}
       >
         <div>&copy; 2026 StudentHub. All rights reserved.</div>

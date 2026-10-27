@@ -32,7 +32,7 @@ export const INITIAL_ATTENDANCE_SUBJECTS = [
     id: 'sub-cn',
     name: 'CN',
     fullName: 'Computer Networks',
-    color: '#DFD6AE', // Yellow Sapling
+    color: '#85325c', // Yellow Sapling
   },
   {
     id: 'sub-mfef',
@@ -203,7 +203,7 @@ export const INITIAL_ATTENDANCE = [
     held: 24,
     attended: 21,
     absent: 3,
-    color: '#DFD6AE',
+    color: '#85325c',
   },
   {
     id: 'sub-mfef',
@@ -323,7 +323,7 @@ export const INITIAL_TIMETABLE = [
     classroom: 'Room 302',
     startTime: '09:00',
     endTime: '10:30',
-    color: '#DFD6AE',
+    color: '#85325c',
   },
   {
     id: 'tt-2',
@@ -377,7 +377,7 @@ export const INITIAL_TIMETABLE = [
     classroom: 'Room 302',
     startTime: '09:00',
     endTime: '10:30',
-    color: '#DFD6AE',
+    color: '#85325c',
   },
   {
     id: 'tt-8',
@@ -431,7 +431,7 @@ export const INITIAL_TIMETABLE = [
     classroom: 'Room 302',
     startTime: '09:00',
     endTime: '10:30',
-    color: '#DFD6AE',
+    color: '#85325c',
   },
   {
     id: 'tt-14',

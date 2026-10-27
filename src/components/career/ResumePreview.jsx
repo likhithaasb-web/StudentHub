@@ -342,7 +342,7 @@ const ResumePreview = ({ resume, zoom = 1 }) => {
             {/* Top Accent Header */}
             <div
               style={{
-                backgroundColor: '#274245',
+                backgroundColor: '#85325c',
                 color: '#ffffff',
                 margin: '-18mm -16mm 10pt -16mm',
                 padding: '16mm 16mm 14mm 16mm',
@@ -356,14 +356,14 @@ const ResumePreview = ({ resume, zoom = 1 }) => {
                   <h1 style={{ fontSize: '22pt', fontWeight: 800, margin: 0, color: '#F7F5EC', letterSpacing: '0.02em' }}>
                     {personal.fullName || 'Your Full Name'}
                   </h1>
-                  <div style={{ fontSize: '11pt', color: '#DFD6AE', fontWeight: 600, marginTop: '3pt' }}>
+                  <div style={{ fontSize: '11pt', color: '#f0eada', fontWeight: 600, marginTop: '3pt' }}>
                     {personal.headline || 'Software Engineering & Computer Science'}
                   </div>
                 </div>
 
                 <div style={{ fontSize: '8.5pt', color: '#d1d5db', display: 'flex', flexDirection: 'column', gap: '2pt', textAlign: 'right' }}>
                   {personal.email && (
-                    <a href={`mailto:${personal.email}`} style={{ color: '#DFD6AE', textDecoration: 'none' }}>
+                    <a href={`mailto:${personal.email}`} style={{ color: '#f0eada', textDecoration: 'none' }}>
                       {personal.email}
                     </a>
                   )}
@@ -375,17 +375,17 @@ const ResumePreview = ({ resume, zoom = 1 }) => {
               {/* Links bar */}
               <div style={{ display: 'flex', gap: '12pt', fontSize: '8.5pt', marginTop: '4pt', borderTop: '1px solid rgba(223, 214, 174, 0.25)', paddingTop: '6pt' }}>
                 {personal.linkedin && (
-                  <a href={getFullUrl(personal.linkedin)} target="_blank" rel="noopener noreferrer" style={{ color: '#DFD6AE', textDecoration: 'none' }}>
+                  <a href={getFullUrl(personal.linkedin)} target="_blank" rel="noopener noreferrer" style={{ color: '#f0eada', textDecoration: 'none' }}>
                     LinkedIn: {formatUrl(personal.linkedin)}
                   </a>
                 )}
                 {personal.github && (
-                  <a href={getFullUrl(personal.github)} target="_blank" rel="noopener noreferrer" style={{ color: '#DFD6AE', textDecoration: 'none' }}>
+                  <a href={getFullUrl(personal.github)} target="_blank" rel="noopener noreferrer" style={{ color: '#f0eada', textDecoration: 'none' }}>
                     GitHub: {formatUrl(personal.github)}
                   </a>
                 )}
                 {personal.portfolio && (
-                  <a href={getFullUrl(personal.portfolio)} target="_blank" rel="noopener noreferrer" style={{ color: '#DFD6AE', textDecoration: 'none' }}>
+                  <a href={getFullUrl(personal.portfolio)} target="_blank" rel="noopener noreferrer" style={{ color: '#f0eada', textDecoration: 'none' }}>
                     Portfolio: {formatUrl(personal.portfolio)}
                   </a>
                 )}
@@ -395,7 +395,7 @@ const ResumePreview = ({ resume, zoom = 1 }) => {
             {/* Summary */}
             {personal.summary && (
               <div>
-                <h3 style={{ fontSize: '11pt', fontWeight: 800, textTransform: 'uppercase', color: '#274245', borderBottom: '2pt solid #DFD6AE', paddingBottom: '2pt', margin: '0 0 5pt 0' }}>
+                <h3 style={{ fontSize: '11pt', fontWeight: 800, textTransform: 'uppercase', color: '#85325c', borderBottom: '2pt solid #f0eada', paddingBottom: '2pt', margin: '0 0 5pt 0' }}>
                   Professional Profile
                 </h3>
                 <p style={{ margin: 0, color: '#374151', fontSize: '9pt', lineHeight: 1.5 }}>
@@ -407,7 +407,7 @@ const ResumePreview = ({ resume, zoom = 1 }) => {
             {/* Skills with Chips */}
             {skills.length > 0 && (
               <div>
-                <h3 style={{ fontSize: '11pt', fontWeight: 800, textTransform: 'uppercase', color: '#274245', borderBottom: '2pt solid #DFD6AE', paddingBottom: '2pt', margin: '0 0 6pt 0' }}>
+                <h3 style={{ fontSize: '11pt', fontWeight: 800, textTransform: 'uppercase', color: '#85325c', borderBottom: '2pt solid #f0eada', paddingBottom: '2pt', margin: '0 0 6pt 0' }}>
                   Core Competencies & Technologies
                 </h3>
                 <div style={{ display: 'flex', flexDirection: 'column', gap: '6pt' }}>
@@ -446,7 +446,7 @@ const ResumePreview = ({ resume, zoom = 1 }) => {
             {/* Experience */}
             {experience.length > 0 && (
               <div>
-                <h3 style={{ fontSize: '11pt', fontWeight: 800, textTransform: 'uppercase', color: '#274245', borderBottom: '2pt solid #DFD6AE', paddingBottom: '2pt', margin: '0 0 6pt 0' }}>
+                <h3 style={{ fontSize: '11pt', fontWeight: 800, textTransform: 'uppercase', color: '#85325c', borderBottom: '2pt solid #f0eada', paddingBottom: '2pt', margin: '0 0 6pt 0' }}>
                   Internships & Work Experience
                 </h3>
                 <div style={{ display: 'flex', flexDirection: 'column', gap: '9pt' }}>
@@ -454,7 +454,7 @@ const ResumePreview = ({ resume, zoom = 1 }) => {
                     <div key={exp.id}>
                       <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'baseline' }}>
                         <span style={{ fontSize: '10pt', fontWeight: 700, color: '#111827' }}>
-                          {exp.jobTitle} <span style={{ color: '#274245', fontWeight: 600 }}>@ {exp.company}</span>
+                          {exp.jobTitle} <span style={{ color: '#85325c', fontWeight: 600 }}>@ {exp.company}</span>
                         </span>
                         <span style={{ fontSize: '8.5pt', color: '#4b5563', fontWeight: 600 }}>
                           {exp.startDate} – {exp.current ? 'Present' : exp.endDate}
@@ -483,12 +483,12 @@ const ResumePreview = ({ resume, zoom = 1 }) => {
             {/* Projects */}
             {projects.length > 0 && (
               <div>
-                <h3 style={{ fontSize: '11pt', fontWeight: 800, textTransform: 'uppercase', color: '#274245', borderBottom: '2pt solid #DFD6AE', paddingBottom: '2pt', margin: '0 0 6pt 0' }}>
+                <h3 style={{ fontSize: '11pt', fontWeight: 800, textTransform: 'uppercase', color: '#85325c', borderBottom: '2pt solid #f0eada', paddingBottom: '2pt', margin: '0 0 6pt 0' }}>
                   Highlighted Projects
                 </h3>
                 <div style={{ display: 'flex', flexDirection: 'column', gap: '8pt' }}>
                   {projects.map((proj) => (
-                    <div key={proj.id} style={{ borderLeft: '2pt solid #274245', paddingLeft: '8pt' }}>
+                    <div key={proj.id} style={{ borderLeft: '2pt solid #85325c', paddingLeft: '8pt' }}>
                       <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'baseline' }}>
                         <span style={{ fontSize: '9.5pt', fontWeight: 700, color: '#111827' }}>
                           {proj.title}
@@ -499,7 +499,7 @@ const ResumePreview = ({ resume, zoom = 1 }) => {
                       </div>
 
                       {proj.technologies && proj.technologies.length > 0 && (
-                        <div style={{ fontSize: '8pt', color: '#274245', fontWeight: 600, margin: '1pt 0 2pt 0' }}>
+                        <div style={{ fontSize: '8pt', color: '#85325c', fontWeight: 600, margin: '1pt 0 2pt 0' }}>
                           Stack: {proj.technologies.join(' • ')}
                         </div>
                       )}
@@ -510,12 +510,12 @@ const ResumePreview = ({ resume, zoom = 1 }) => {
 
                       <div style={{ display: 'flex', gap: '8pt', fontSize: '7.8pt' }}>
                         {proj.githubUrl && (
-                          <a href={getFullUrl(proj.githubUrl)} target="_blank" rel="noopener noreferrer" style={{ color: '#274245', fontWeight: 600 }}>
+                          <a href={getFullUrl(proj.githubUrl)} target="_blank" rel="noopener noreferrer" style={{ color: '#85325c', fontWeight: 600 }}>
                             GitHub Repo ↗
                           </a>
                         )}
                         {proj.liveUrl && (
-                          <a href={getFullUrl(proj.liveUrl)} target="_blank" rel="noopener noreferrer" style={{ color: '#274245', fontWeight: 600 }}>
+                          <a href={getFullUrl(proj.liveUrl)} target="_blank" rel="noopener noreferrer" style={{ color: '#85325c', fontWeight: 600 }}>
                             Live Demo ↗
                           </a>
                         )}
@@ -529,7 +529,7 @@ const ResumePreview = ({ resume, zoom = 1 }) => {
             {/* Education */}
             {education.length > 0 && (
               <div>
-                <h3 style={{ fontSize: '11pt', fontWeight: 800, textTransform: 'uppercase', color: '#274245', borderBottom: '2pt solid #DFD6AE', paddingBottom: '2pt', margin: '0 0 6pt 0' }}>
+                <h3 style={{ fontSize: '11pt', fontWeight: 800, textTransform: 'uppercase', color: '#85325c', borderBottom: '2pt solid #f0eada', paddingBottom: '2pt', margin: '0 0 6pt 0' }}>
                   Education
                 </h3>
                 <div style={{ display: 'flex', flexDirection: 'column', gap: '6pt' }}>
@@ -560,7 +560,7 @@ const ResumePreview = ({ resume, zoom = 1 }) => {
               <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '12pt' }}>
                 {certifications.length > 0 && (
                   <div>
-                    <h4 style={{ fontSize: '9.5pt', fontWeight: 800, textTransform: 'uppercase', color: '#274245', borderBottom: '1pt solid #e5e7eb', paddingBottom: '2pt', margin: '0 0 4pt 0' }}>
+                    <h4 style={{ fontSize: '9.5pt', fontWeight: 800, textTransform: 'uppercase', color: '#85325c', borderBottom: '1pt solid #e5e7eb', paddingBottom: '2pt', margin: '0 0 4pt 0' }}>
                       Certifications
                     </h4>
                     <div style={{ display: 'flex', flexDirection: 'column', gap: '4pt', fontSize: '8.5pt' }}>
@@ -576,7 +576,7 @@ const ResumePreview = ({ resume, zoom = 1 }) => {
 
                 {optionalSections.awards && awards.length > 0 && (
                   <div>
-                    <h4 style={{ fontSize: '9.5pt', fontWeight: 800, textTransform: 'uppercase', color: '#274245', borderBottom: '1pt solid #e5e7eb', paddingBottom: '2pt', margin: '0 0 4pt 0' }}>
+                    <h4 style={{ fontSize: '9.5pt', fontWeight: 800, textTransform: 'uppercase', color: '#85325c', borderBottom: '1pt solid #e5e7eb', paddingBottom: '2pt', margin: '0 0 4pt 0' }}>
                       Honors & Awards
                     </h4>
                     <div style={{ display: 'flex', flexDirection: 'column', gap: '4pt', fontSize: '8.5pt' }}>

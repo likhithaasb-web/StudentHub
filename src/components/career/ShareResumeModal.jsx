@@ -42,7 +42,7 @@ const ShareResumeModal = ({ isOpen, onClose, resume }) => {
                 left: '0.85rem',
                 top: '50%',
                 transform: 'translateY(-50%)',
-                color: 'var(--accent-gold, #DFD6AE)',
+                color: 'var(--accent-cream, #f0eada)',
               }}
             />
             <input
@@ -87,8 +87,8 @@ const ShareResumeModal = ({ isOpen, onClose, resume }) => {
         {/* Benefits list */}
         <div
           style={{
-            backgroundColor: 'rgba(223, 214, 174, 0.06)',
-            border: '1px solid rgba(223, 214, 174, 0.15)',
+            backgroundColor: 'rgba(240, 234, 218, 0.08)',
+            border: '1px solid rgba(240, 234, 218, 0.2)',
             borderRadius: 'var(--radius-md)',
             padding: '1rem',
             display: 'flex',
@@ -97,7 +97,7 @@ const ShareResumeModal = ({ isOpen, onClose, resume }) => {
           }}
         >
           <div style={{ display: 'flex', gap: '0.65rem', alignItems: 'flex-start' }}>
-            <Sparkles size={16} style={{ color: 'var(--accent-gold, #DFD6AE)', flexShrink: 0, marginTop: 2 }} />
+            <Sparkles size={16} style={{ color: 'var(--accent-cream, #f0eada)', flexShrink: 0, marginTop: 2 }} />
             <div>
               <strong style={{ fontSize: '0.85rem', color: 'var(--text-primary)' }}>Always Up-to-Date</strong>
               <p style={{ margin: '0.15rem 0 0 0', fontSize: '0.78rem', color: 'var(--text-secondary)', lineHeight: 1.4 }}>

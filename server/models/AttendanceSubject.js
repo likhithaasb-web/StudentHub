@@ -20,7 +20,7 @@ const attendanceSubjectSchema = new mongoose.Schema(
     },
     color: {
       type: String,
-      default: '#DFD6AE',
+      default: '#85325c',
     },
   },
   {

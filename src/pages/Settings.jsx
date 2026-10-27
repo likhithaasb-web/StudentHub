@@ -185,23 +185,23 @@ const Settings = () => {
               minWidth: 160,
               padding: '1.25rem',
               borderRadius: 'var(--radius-md)',
-              backgroundColor: '#274245',
-              border: theme === 'dark' ? '2px solid #DFD6AE' : '1px solid #38575c',
+              backgroundColor: '#85325c',
+              border: theme === 'dark' ? '2px solid #f0eada' : '1px solid rgba(240, 234, 218, 0.22)',
               color: '#F7F5EC',
               cursor: 'pointer',
               textAlign: 'left',
               display: 'flex',
               flexDirection: 'column',
               gap: '0.5rem',
-              boxShadow: theme === 'dark' ? '0 0 16px rgba(223, 214, 174, 0.35)' : 'none',
+              boxShadow: theme === 'dark' ? '0 0 16px rgba(240, 234, 218, 0.35)' : 'none',
             }}
           >
             <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between' }}>
-              <span style={{ fontWeight: 700, color: '#DFD6AE' }}>Dark Blue & Yellow Sapling</span>
-              {theme === 'dark' && <CheckCircle2 size={16} style={{ color: '#DFD6AE' }} />}
+              <span style={{ fontWeight: 700, color: '#f0eada' }}>Deep Rosewood</span>
+              {theme === 'dark' && <CheckCircle2 size={16} style={{ color: '#f0eada' }} />}
             </div>
-            <span style={{ fontSize: '0.75rem', color: '#DFD6AE', opacity: 0.85 }}>
-              Deep #274245 dark blue with #DFD6AE yellow sapling highlights.
+            <span style={{ fontSize: '0.75rem', color: '#f0eada', opacity: 0.9 }}>
+              Rich #85325c Deep Rosewood with #f0eada Cream Beige highlights.
             </span>
           </button>
 
@@ -215,9 +215,9 @@ const Settings = () => {
               minWidth: 160,
               padding: '1.25rem',
               borderRadius: 'var(--radius-md)',
-              backgroundColor: '#F8F6EF',
-              border: theme === 'light' ? '2px solid #274245' : '1px solid #DFD6AE',
-              color: '#182C2E',
+              backgroundColor: '#f0eada',
+              border: theme === 'light' ? '2px solid #85325c' : '1px solid #ded4bf',
+              color: '#381226',
               cursor: 'pointer',
               textAlign: 'left',
               display: 'flex',
@@ -227,11 +227,11 @@ const Settings = () => {
             }}
           >
             <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between' }}>
-              <span style={{ fontWeight: 700, color: '#274245' }}>Yellow Sapling Cream</span>
-              {theme === 'light' && <CheckCircle2 size={16} style={{ color: '#274245' }} />}
+              <span style={{ fontWeight: 700, color: '#85325c' }}>Cream Beige</span>
+              {theme === 'light' && <CheckCircle2 size={16} style={{ color: '#85325c' }} />}
             </div>
-            <span style={{ fontSize: '0.75rem', color: '#667e80' }}>
-              Clean #DFD6AE warm cream base with dark blue structure.
+            <span style={{ fontSize: '0.75rem', color: '#7d4d65' }}>
+              Clean #f0eada warm cream base with #85325c Deep Rosewood structure.
             </span>
           </button>
         </div>

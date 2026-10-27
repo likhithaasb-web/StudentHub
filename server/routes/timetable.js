@@ -30,7 +30,7 @@ router.post('/', async (req, res) => {
       classroom: classroom ? classroom.trim() : '',
       startTime,
       endTime,
-      color: color || '#DFD6AE',
+      color: color || '#85325c',
     });
 
     await session.save();
