@@ -32,9 +32,20 @@ export const AppProvider = ({ children }) => {
 
   // 2. Settings & Auth State
   const [settings, setSettings] = useState(() => storage.get('settings', INITIAL_SETTINGS));
+
+  // Authentication is session-scoped:
+  // Fresh visits and new browser tabs ALWAYS open the Login page first.
+  // We explicitly clean up any legacy persistent flag from localStorage.
   const [isAuthenticated, setIsAuthenticated] = useState(() => {
-    // Defaults to false so visiting the website immediately opens the Login page
-    return Boolean(storage.get('auth_session_active', false));
+    try {
+      localStorage.removeItem('studenthub_auth_session_active');
+    } catch {}
+
+    try {
+      return sessionStorage.getItem('studenthub_auth_session_active') === 'true';
+    } catch {
+      return false;
+    }
   });
 
   const updateSettings = (newSettings) => {
@@ -47,7 +58,10 @@ export const AppProvider = ({ children }) => {
 
   const login = (email, password) => {
     setIsAuthenticated(true);
-    storage.set('auth_session_active', true);
+    try {
+      sessionStorage.setItem('studenthub_auth_session_active', 'true');
+      localStorage.removeItem('studenthub_auth_session_active');
+    } catch {}
     if (email) {
       updateSettings({ email });
     }
@@ -56,7 +70,10 @@ export const AppProvider = ({ children }) => {
 
   const signup = ({ name, email, college, password }) => {
     setIsAuthenticated(true);
-    storage.set('auth_session_active', true);
+    try {
+      sessionStorage.setItem('studenthub_auth_session_active', 'true');
+      localStorage.removeItem('studenthub_auth_session_active');
+    } catch {}
     updateSettings({
       studentName: name || 'Student',
       email: email || '',
@@ -67,12 +84,18 @@ export const AppProvider = ({ children }) => {
 
   const logout = () => {
     setIsAuthenticated(false);
-    storage.set('auth_session_active', false);
+    try {
+      sessionStorage.removeItem('studenthub_auth_session_active');
+      localStorage.removeItem('studenthub_auth_session_active');
+    } catch {}
   };
 
   const demoLogin = () => {
     setIsAuthenticated(true);
-    storage.set('auth_session_active', true);
+    try {
+      sessionStorage.setItem('studenthub_auth_session_active', 'true');
+      localStorage.removeItem('studenthub_auth_session_active');
+    } catch {}
     updateSettings({
       studentName: 'Alex Morgan',
       email: 'alex@university.edu',

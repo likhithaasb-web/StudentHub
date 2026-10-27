@@ -34,7 +34,7 @@ const Login = () => {
     email: 'alex@university.edu',
     password: 'password123',
     college: 'State Tech University',
-    rememberMe: true,
+    rememberMe: false,
   });
 
   const [showPassword, setShowPassword] = useState(false);
