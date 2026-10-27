@@ -269,7 +269,7 @@ const ResumeList = ({
                     <button
                       onClick={() => setShareResume(resume)}
                       className="btn-icon"
-                      style={{ width: 28, height: 28, color: 'var(--accent-cream, #f0eada)' }}
+                      style={{ width: 28, height: 28, color: 'var(--accent-cream, #F1EAD7)' }}
                       title="Share Public Link"
                     >
                       <Share2 size={13} />

@@ -3,8 +3,8 @@ import Modal from '../common/Modal';
 import { Palette, BookOpen, Tag } from 'lucide-react';
 
 const PRESET_COLORS = [
-  '#85325c', // Deep Rosewood
-  '#f0eada', // Cream Beige
+  '#17644D', // Emerald
+  '#F1EAD7', // Vanilla
   '#67e8f9', // Cyan
   '#34d399', // Emerald
   '#f59e0b', // Amber
@@ -23,7 +23,7 @@ const SubjectFormModal = ({
   const [formData, setFormData] = useState({
     name: '',
     fullName: '',
-    color: '#85325c',
+    color: '#17644D',
   });
 
   const [error, setError] = useState('');
@@ -33,7 +33,7 @@ const SubjectFormModal = ({
       setFormData({
         name: subjectToEdit.subject || subjectToEdit.name || '',
         fullName: subjectToEdit.fullName || subjectToEdit.subject || '',
-        color: subjectToEdit.color || '#85325c',
+        color: subjectToEdit.color || '#17644D',
       });
     } else {
       setFormData({

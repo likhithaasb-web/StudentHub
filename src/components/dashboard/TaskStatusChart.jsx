@@ -5,7 +5,7 @@ import { Link } from 'react-router-dom';
 
 const STATUS_COLORS = {
   Completed: '#34d399',
-  'In Progress': '#f0eada',
+  'In Progress': '#F1EAD7',
   Pending: '#e09f58',
 };
 

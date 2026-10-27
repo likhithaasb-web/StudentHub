@@ -352,7 +352,7 @@ export const AppProvider = ({ children }) => {
       id: `sub-${name.toLowerCase().replace(/[^a-z0-9]/g, '') || generateId()}`,
       name,
       fullName: (subjectData.fullName || subjectData.name || name).trim(),
-      color: subjectData.color || '#85325c',
+      color: subjectData.color || '#17644D',
     };
 
     setAttendanceSubjects((prev) => {

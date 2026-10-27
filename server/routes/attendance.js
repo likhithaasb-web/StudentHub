@@ -32,7 +32,7 @@ router.post('/subjects', async (req, res) => {
       userId: req.userId,
       name: cleanName,
       fullName: fullName ? fullName.trim() : cleanName,
-      color: color || '#85325c',
+      color: color || '#17644D',
     });
 
     await subject.save();

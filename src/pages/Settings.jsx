@@ -185,23 +185,23 @@ const Settings = () => {
               minWidth: 160,
               padding: '1.25rem',
               borderRadius: 'var(--radius-md)',
-              backgroundColor: '#85325c',
-              border: theme === 'dark' ? '2px solid #f0eada' : '1px solid rgba(240, 234, 218, 0.22)',
+              backgroundColor: '#17644D',
+              border: theme === 'dark' ? '2px solid #F1EAD7' : '1px solid rgba(241, 234, 215, 0.22)',
               color: '#F7F5EC',
               cursor: 'pointer',
               textAlign: 'left',
               display: 'flex',
               flexDirection: 'column',
               gap: '0.5rem',
-              boxShadow: theme === 'dark' ? '0 0 16px rgba(240, 234, 218, 0.35)' : 'none',
+              boxShadow: theme === 'dark' ? '0 0 16px rgba(241, 234, 215, 0.35)' : 'none',
             }}
           >
             <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between' }}>
-              <span style={{ fontWeight: 700, color: '#f0eada' }}>Deep Rosewood</span>
-              {theme === 'dark' && <CheckCircle2 size={16} style={{ color: '#f0eada' }} />}
+              <span style={{ fontWeight: 700, color: '#F1EAD7' }}>Emerald</span>
+              {theme === 'dark' && <CheckCircle2 size={16} style={{ color: '#F1EAD7' }} />}
             </div>
-            <span style={{ fontSize: '0.75rem', color: '#f0eada', opacity: 0.9 }}>
-              Rich #85325c Deep Rosewood with #f0eada Cream Beige highlights.
+            <span style={{ fontSize: '0.75rem', color: '#F1EAD7', opacity: 0.9 }}>
+              Rich #17644D Emerald with #F1EAD7 Vanilla highlights.
             </span>
           </button>
 
@@ -215,9 +215,9 @@ const Settings = () => {
               minWidth: 160,
               padding: '1.25rem',
               borderRadius: 'var(--radius-md)',
-              backgroundColor: '#f0eada',
-              border: theme === 'light' ? '2px solid #85325c' : '1px solid #ded4bf',
-              color: '#381226',
+              backgroundColor: '#F1EAD7',
+              border: theme === 'light' ? '2px solid #17644D' : '1px solid #ded4bf',
+              color: '#0e2920',
               cursor: 'pointer',
               textAlign: 'left',
               display: 'flex',
@@ -227,11 +227,11 @@ const Settings = () => {
             }}
           >
             <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between' }}>
-              <span style={{ fontWeight: 700, color: '#85325c' }}>Cream Beige</span>
-              {theme === 'light' && <CheckCircle2 size={16} style={{ color: '#85325c' }} />}
+              <span style={{ fontWeight: 700, color: '#17644D' }}>Vanilla</span>
+              {theme === 'light' && <CheckCircle2 size={16} style={{ color: '#17644D' }} />}
             </div>
-            <span style={{ fontSize: '0.75rem', color: '#7d4d65' }}>
-              Clean #f0eada warm cream base with #85325c Deep Rosewood structure.
+            <span style={{ fontSize: '0.75rem', color: '#537469' }}>
+              Clean #F1EAD7 warm cream base with #17644D Emerald structure.
             </span>
           </button>
         </div>

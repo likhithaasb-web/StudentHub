@@ -74,7 +74,7 @@ const PublicResume = () => {
       <div
         style={{
           minHeight: '100vh',
-          backgroundColor: '#1b0a14',
+          backgroundColor: '#0b1a14',
           color: '#F7F5EC',
           display: 'flex',
           alignItems: 'center',
@@ -83,8 +83,8 @@ const PublicResume = () => {
           gap: '1rem',
         }}
       >
-        <div style={{ width: 40, height: 40, borderRadius: '50%', border: '3px solid #f0eada', borderTopColor: 'transparent', animation: 'spin 1s linear infinite' }} />
-        <p style={{ color: '#f0eada', fontSize: '0.95rem' }}>Loading live student resume...</p>
+        <div style={{ width: 40, height: 40, borderRadius: '50%', border: '3px solid #F1EAD7', borderTopColor: 'transparent', animation: 'spin 1s linear infinite' }} />
+        <p style={{ color: '#F1EAD7', fontSize: '0.95rem' }}>Loading live student resume...</p>
       </div>
     );
   }
@@ -94,7 +94,7 @@ const PublicResume = () => {
       <div
         style={{
           minHeight: '100vh',
-          backgroundColor: '#1b0a14',
+          backgroundColor: '#0b1a14',
           color: '#F7F5EC',
           display: 'flex',
           alignItems: 'center',
@@ -105,8 +105,8 @@ const PublicResume = () => {
         }}
       >
         <div style={{ maxWidth: 440 }}>
-          <h2 style={{ fontSize: '1.5rem', color: '#f0eada', marginBottom: '0.5rem' }}>Resume Not Found</h2>
-          <p style={{ color: '#dfc6d4', fontSize: '0.9rem', marginBottom: '1.5rem', lineHeight: 1.5 }}>
+          <h2 style={{ fontSize: '1.5rem', color: '#F1EAD7', marginBottom: '0.5rem' }}>Resume Not Found</h2>
+          <p style={{ color: '#b9cfc6', fontSize: '0.9rem', marginBottom: '1.5rem', lineHeight: 1.5 }}>
             {error || 'This live resume link does not exist or has been removed.'}
           </p>
           <Link to="/" className="btn btn-primary" style={{ gap: '0.4rem' }}>
@@ -121,7 +121,7 @@ const PublicResume = () => {
     <div
       style={{
         minHeight: '100vh',
-        backgroundColor: '#1b0a14',
+        backgroundColor: '#0b1a14',
         color: '#F7F5EC',
         display: 'flex',
         flexDirection: 'column',
@@ -132,8 +132,8 @@ const PublicResume = () => {
         style={{
           height: 64,
           padding: '0 2rem',
-          backgroundColor: '#270e1d',
-          borderBottom: '1px solid rgba(240, 234, 218, 0.22)',
+          backgroundColor: '#122820',
+          borderBottom: '1px solid rgba(241, 234, 215, 0.22)',
           display: 'flex',
           alignItems: 'center',
           justifyContent: 'space-between',
@@ -154,7 +154,7 @@ const PublicResume = () => {
               display: 'flex',
               alignItems: 'center',
               justifyContent: 'center',
-              color: '#85325c',
+              color: '#17644D',
             }}
           >
             <BookOpen size={18} />
@@ -163,7 +163,7 @@ const PublicResume = () => {
             <div style={{ fontWeight: 800, fontSize: '0.95rem', color: '#F7F5EC' }}>
               StudentHub Career Portfolio
             </div>
-            <div style={{ fontSize: '0.72rem', color: '#f0eada', display: 'flex', alignItems: 'center', gap: '0.3rem' }}>
+            <div style={{ fontSize: '0.72rem', color: '#F1EAD7', display: 'flex', alignItems: 'center', gap: '0.3rem' }}>
               <ShieldCheck size={12} /> Verified Student Profile: {resume.personal?.fullName}
             </div>
           </div>

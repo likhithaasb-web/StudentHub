@@ -48,7 +48,7 @@ router.post('/register', async (req, res) => {
 
     // Automatically seed core subjects: CN, MFEF, TRAINING, OT, API, ML
     const initialSubjects = [
-      { name: 'CN', fullName: 'Computer Networks', color: '#85325c' },
+      { name: 'CN', fullName: 'Computer Networks', color: '#17644D' },
       { name: 'MFEF', fullName: 'Mathematical Foundations of Economics & Finance', color: '#67e8f9' },
       { name: 'TRAINING', fullName: 'Technical & Placement Training', color: '#34d399' },
       { name: 'OT', fullName: 'Optimization Techniques', color: '#f59e0b' },

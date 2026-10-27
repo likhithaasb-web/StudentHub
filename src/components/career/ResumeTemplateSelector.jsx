@@ -18,7 +18,7 @@ export const TEMPLATES = [
     icon: Layers,
     description: 'Contemporary design featuring clean skill chips, prominent headers, and a subtle accent color. Perfect for tech & product roles.',
     tags: ['Tech & Startups', 'Skill Chips', 'Accent Highlights'],
-    previewColors: { header: '#85325c', accent: '#f0eada', bg: '#f9fafb' },
+    previewColors: { header: '#17644D', accent: '#F1EAD7', bg: '#f9fafb' },
   },
   {
     id: 'minimal',
@@ -47,9 +47,9 @@ const ResumeTemplateSelector = ({ selectedTemplate = 'professional', onSelectTem
               style={{
                 padding: '1.15rem',
                 borderRadius: 'var(--radius-md)',
-                backgroundColor: isSelected ? 'rgba(240, 234, 218, 0.16)' : 'var(--bg-card)',
+                backgroundColor: isSelected ? 'rgba(241, 234, 215, 0.16)' : 'var(--bg-card)',
                 border: isSelected ? '2px solid var(--primary)' : '1px solid var(--border-subtle)',
-                boxShadow: isSelected ? '0 0 16px rgba(240, 234, 218, 0.2)' : 'var(--shadow-sm)',
+                boxShadow: isSelected ? '0 0 16px rgba(241, 234, 215, 0.2)' : 'var(--shadow-sm)',
                 textAlign: 'left',
                 cursor: 'pointer',
                 display: 'flex',
