@@ -1,6 +1,8 @@
 import React, { useState } from 'react';
 import { useNavigate, Link } from 'react-router-dom';
 import { useApp } from '../context/AppContext';
+import GoogleAuthModal from '../components/auth/GoogleAuthModal';
+import { api } from '../utils/api';
 import {
   BookOpen,
   Mail,
@@ -25,7 +27,7 @@ import {
 } from 'lucide-react';
 
 const Login = () => {
-  const { login, signup, demoLogin, theme } = useApp();
+  const { login, signup, demoLogin, loginWithGoogle, theme } = useApp();
   const navigate = useNavigate();
 
   const [isSignUp, setIsSignUp] = useState(false);
@@ -69,6 +71,82 @@ const Login = () => {
       setLoading(false);
       navigate('/');
     }, 400);
+  };
+
+  const [isGoogleModalOpen, setIsGoogleModalOpen] = useState(false);
+  const [googleLoading, setGoogleLoading] = useState(false);
+  const [googleClientId, setGoogleClientId] = useState(
+    () => localStorage.getItem('studenthub_google_client_id') || import.meta.env.VITE_GOOGLE_CLIENT_ID || ''
+  );
+
+  const handleGoogleSuccess = async ({ email, name, avatar }) => {
+    try {
+      await api.post('/auth/google', { email, name, avatar });
+    } catch {}
+
+    loginWithGoogle({
+      name,
+      email,
+      avatar,
+      college: 'Verified Google Student',
+    });
+    navigate('/');
+  };
+
+  const handleSaveClientId = (newId) => {
+    setGoogleClientId(newId);
+    try {
+      localStorage.setItem('studenthub_google_client_id', newId);
+    } catch {}
+  };
+
+  const handleGoogleSignIn = () => {
+    setError('');
+    const clientId = googleClientId || import.meta.env.VITE_GOOGLE_CLIENT_ID || localStorage.getItem('studenthub_google_client_id');
+
+    // If client ID is configured and GIS is available, launch native OAuth popup
+    if (window.google?.accounts?.oauth2 && clientId) {
+      try {
+        setGoogleLoading(true);
+        const tokenClient = window.google.accounts.oauth2.initTokenClient({
+          client_id: clientId,
+          scope: 'https://www.googleapis.com/auth/userinfo.profile https://www.googleapis.com/auth/userinfo.email',
+          callback: async (tokenResponse) => {
+            if (tokenResponse.error) {
+              setGoogleLoading(false);
+              setError(`Google Sign-In failed: ${tokenResponse.error_description || tokenResponse.error}`);
+              return;
+            }
+            try {
+              const res = await fetch('https://www.googleapis.com/oauth2/v3/userinfo', {
+                headers: { Authorization: `Bearer ${tokenResponse.access_token}` },
+              });
+              const googleProfile = await res.json();
+              if (googleProfile.email) {
+                await handleGoogleSuccess({
+                  email: googleProfile.email,
+                  name: googleProfile.name || googleProfile.given_name || 'Google Student',
+                  avatar: googleProfile.picture || '',
+                });
+              } else {
+                setError('Could not retrieve email from Google profile.');
+              }
+            } catch (err) {
+              setError('Failed to fetch Google profile. Please try again.');
+            } finally {
+              setGoogleLoading(false);
+            }
+          },
+        });
+        tokenClient.requestAccessToken({ prompt: 'select_account' });
+        return;
+      } catch (err) {
+        console.error('Google OAuth error:', err);
+      }
+    }
+
+    // Otherwise open the Google Authentication Modal
+    setIsGoogleModalOpen(true);
   };
 
   const handleDemoSignIn = () => {
@@ -708,7 +786,8 @@ const Login = () => {
               {/* Google Sign In Button */}
               <button
                 type="button"
-                onClick={handleDemoSignIn}
+                onClick={handleGoogleSignIn}
+                disabled={googleLoading}
                 style={{
                   width: '100%',
                   padding: '0.75rem',
@@ -728,7 +807,23 @@ const Login = () => {
                 onMouseEnter={(e) => (e.currentTarget.style.backgroundColor = 'rgba(23, 100, 77, 0.8)')}
                 onMouseLeave={(e) => (e.currentTarget.style.backgroundColor = 'rgba(14, 45, 35, 0.8)')}
               >
-                {/* SVG Google 'G' Logo */}
+                {googleLoading ? (
+                  <>
+                    <div
+                      style={{
+                        width: 18,
+                        height: 18,
+                        borderRadius: '50%',
+                        border: '2px solid #F1EAD7',
+                        borderTopColor: 'transparent',
+                        animation: 'spin 1s linear infinite',
+                      }}
+                    />
+                    <span>Connecting Google Account...</span>
+                  </>
+                ) : (
+                  <>
+                    {/* SVG Google 'G' Logo */}
                 <svg width="18" height="18" viewBox="0 0 24 24">
                   <path
                     fill="#4285F4"
@@ -748,6 +843,8 @@ const Login = () => {
                   />
                 </svg>
                 <span>Sign in with Google</span>
+                  </>
+                )}
               </button>
 
               {/* Instant 1-Click Demo Access Button */}
@@ -851,6 +948,15 @@ const Login = () => {
           </span>
         </div>
       </footer>
+
+      {/* Google Account Modal */}
+      <GoogleAuthModal
+        isOpen={isGoogleModalOpen}
+        onClose={() => setIsGoogleModalOpen(false)}
+        onGoogleSuccess={handleGoogleSuccess}
+        storedClientId={googleClientId}
+        onSaveClientId={handleSaveClientId}
+      />
 
       {/* Responsive CSS */}
       <style>{`

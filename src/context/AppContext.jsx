@@ -104,6 +104,22 @@ export const AppProvider = ({ children }) => {
     return true;
   };
 
+  const loginWithGoogle = ({ name, email, avatar, college }) => {
+    setIsAuthenticated(true);
+    try {
+      sessionStorage.setItem('studenthub_auth_session_active', 'true');
+      localStorage.removeItem('studenthub_auth_session_active');
+    } catch {}
+    updateSettings({
+      studentName: name || 'Google User',
+      email: email || '',
+      avatar: avatar || '',
+      collegeName: college || settings.collegeName || 'University Student',
+      authProvider: 'google',
+    });
+    return true;
+  };
+
   // 3. Tasks State
   const [tasks, setTasks] = useState(() => storage.get('tasks', INITIAL_TASKS));
 
@@ -716,6 +732,7 @@ export const AppProvider = ({ children }) => {
         logout,
         signup,
         demoLogin,
+        loginWithGoogle,
         tasks,
         addTask,
         updateTask,

@@ -118,6 +118,54 @@ router.post('/login', async (req, res) => {
   }
 });
 
+// Google Authentication
+router.post('/google', async (req, res) => {
+  try {
+    const { email, name, avatar } = req.body;
+    if (!email) {
+      return res.status(400).json({ message: 'Email is required from Google.' });
+    }
+
+    let user = await User.findOne({ email: email.toLowerCase().trim() });
+    if (!user) {
+      user = new User({
+        name: name || 'Google User',
+        email: email.toLowerCase().trim(),
+        password: await bcrypt.hash(Math.random().toString(36), 10),
+        collegeName: 'Verified Google Student',
+      });
+      await user.save();
+
+      const initialSubjects = [
+        { name: 'CN', fullName: 'Computer Networks', color: '#17644D' },
+        { name: 'MFEF', fullName: 'Mathematical Foundations of Economics & Finance', color: '#67e8f9' },
+        { name: 'TRAINING', fullName: 'Technical & Placement Training', color: '#34d399' },
+        { name: 'OT', fullName: 'Optimization Techniques', color: '#f59e0b' },
+        { name: 'API', fullName: 'API Development & Web Services', color: '#a78bfa' },
+        { name: 'ML', fullName: 'Machine Learning', color: '#f87171' },
+      ];
+      await AttendanceSubject.insertMany(initialSubjects.map((s) => ({ ...s, userId: user._id })));
+    }
+
+    const token = signToken(user._id);
+    return res.json({
+      token,
+      user: {
+        id: user._id,
+        name: user.name,
+        email: user.email,
+        collegeName: user.collegeName,
+        targetAttendance: user.targetAttendance,
+        dailyStudyGoalMinutes: user.dailyStudyGoalMinutes,
+        theme: user.theme,
+      },
+    });
+  } catch (error) {
+    console.error('Google auth error:', error);
+    return res.status(500).json({ message: 'Server error during Google login.' });
+  }
+});
+
 // 3. Get Current User Profile
 router.get('/me', authMiddleware, async (req, res) => {
   try {
