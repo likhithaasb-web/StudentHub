@@ -10,6 +10,7 @@ import Notes from './pages/Notes';
 import Attendance from './pages/Attendance';
 import StudyPlanner from './pages/StudyPlanner';
 import CareerStudio from './pages/CareerStudio';
+import PublicResume from './pages/PublicResume';
 import Settings from './pages/Settings';
 import Login from './pages/Login';
 
@@ -43,6 +44,9 @@ function AppRoutes() {
           </PublicRoute>
         }
       />
+
+      {/* Public Shareable Resume Route (Open to recruiters without login) */}
+      <Route path="/r/:shareId" element={<PublicResume />} />
 
       {/* Main Dashboard & Feature Pages (Protected) */}
       <Route

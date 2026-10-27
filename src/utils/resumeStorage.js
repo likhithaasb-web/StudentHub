@@ -8,6 +8,7 @@ const RESUMES_STORAGE_KEY = 'resumes';
 
 export const DEFAULT_DEMO_RESUME = {
   id: 'resume-demo-1',
+  shareId: 'alex-morgan-preview',
   title: 'Software Engineering & Cloud Internship',
   targetRole: 'Full Stack / Cloud Intern',
   template: 'professional', // 'professional' | 'modern' | 'minimal'
@@ -202,6 +203,7 @@ export const DEFAULT_DEMO_RESUME = {
 export const createBlankResume = (title = 'Untitled Resume', template = 'professional') => {
   return {
     id: generateId(),
+    shareId: 'r-' + Math.random().toString(36).substring(2, 9),
     title: title.trim() || 'Untitled Resume',
     targetRole: '',
     template,
@@ -273,7 +275,19 @@ export const resumeStorage = {
   getResumes: () => {
     const list = storage.get(RESUMES_STORAGE_KEY, null);
     if (Array.isArray(list) && list.length > 0) {
-      return list;
+      // Ensure all resumes have a valid shareId
+      let modified = false;
+      const normalized = list.map((r) => {
+        if (!r.shareId) {
+          modified = true;
+          return { ...r, shareId: 'r-' + Math.random().toString(36).substring(2, 9) };
+        }
+        return r;
+      });
+      if (modified) {
+        storage.set(RESUMES_STORAGE_KEY, normalized);
+      }
+      return normalized;
     }
     // Seed with initial demo resume
     const seeded = [DEFAULT_DEMO_RESUME];
@@ -292,6 +306,7 @@ export const resumeStorage = {
     const existingIndex = list.findIndex((r) => r.id === resume.id);
     const updatedResume = {
       ...resume,
+      shareId: resume.shareId || 'r-' + Math.random().toString(36).substring(2, 9),
       updatedAt: new Date().toISOString(),
     };
 
@@ -321,6 +336,7 @@ export const resumeStorage = {
     const copy = {
       ...JSON.parse(JSON.stringify(target)),
       id: generateId(),
+      shareId: 'r-' + Math.random().toString(36).substring(2, 9),
       title: `${target.title} (Copy)`,
       createdAt: new Date().toISOString().split('T')[0],
       updatedAt: new Date().toISOString(),

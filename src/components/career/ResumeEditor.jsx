@@ -3,6 +3,7 @@ import ResumeSectionForm from './ResumeSectionForm';
 import ResumePreview from './ResumePreview';
 import ResumeCompleteness from './ResumeCompleteness';
 import ResumeTemplateSelector from './ResumeTemplateSelector';
+import ShareResumeModal from './ShareResumeModal';
 import Modal from '../common/Modal';
 import { printResume } from '../../utils/resumeExport';
 import {
@@ -18,6 +19,7 @@ import {
   Sparkles,
   Eye,
   Edit3,
+  Share2,
 } from 'lucide-react';
 
 const ResumeEditor = ({
@@ -30,6 +32,7 @@ const ResumeEditor = ({
   const [activeSection, setActiveSection] = useState('personal');
   const [zoom, setZoom] = useState(0.85); // Default zoom fit for 2-column desktop view
   const [isTemplateModalOpen, setIsTemplateModalOpen] = useState(false);
+  const [isShareModalOpen, setIsShareModalOpen] = useState(false);
   const [saveSuccess, setSaveSuccess] = useState(false);
 
   // Mobile active tab: 'editor' | 'preview' | 'meta'
@@ -145,6 +148,21 @@ const ResumeEditor = ({
           >
             {saveSuccess ? <CheckCircle2 size={14} /> : <Save size={14} />}
             {saveSuccess ? 'Saved' : 'Save'}
+          </button>
+
+          {/* Share Public Link */}
+          <button
+            onClick={() => setIsShareModalOpen(true)}
+            className="btn btn-secondary btn-sm"
+            style={{
+              gap: '0.35rem',
+              fontSize: '0.8rem',
+              color: 'var(--accent-gold, #DFD6AE)',
+              borderColor: 'rgba(223, 214, 174, 0.4)',
+            }}
+            title="Share live link with recruiters"
+          >
+            <Share2 size={14} /> Share Link
           </button>
 
           {/* Download PDF */}
@@ -352,6 +370,13 @@ const ResumeEditor = ({
           />
         </div>
       </Modal>
+
+      {/* Share Resume Public Link Modal */}
+      <ShareResumeModal
+        isOpen={isShareModalOpen}
+        onClose={() => setIsShareModalOpen(false)}
+        resume={resume}
+      />
     </div>
   );
 };

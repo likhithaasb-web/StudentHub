@@ -4,6 +4,7 @@ import { printResume } from '../../utils/resumeExport';
 import ConfirmDialog from '../common/ConfirmDialog';
 import Modal from '../common/Modal';
 import ResumePreview from './ResumePreview';
+import ShareResumeModal from './ShareResumeModal';
 import {
   Plus,
   Search,
@@ -18,6 +19,7 @@ import {
   Layers,
   Sparkles,
   RotateCcw,
+  Share2,
 } from 'lucide-react';
 
 const ResumeList = ({
@@ -32,6 +34,7 @@ const ResumeList = ({
   const [selectedTemplate, setSelectedTemplate] = useState('ALL');
   const [resumeToDelete, setResumeToDelete] = useState(null);
   const [previewResume, setPreviewResume] = useState(null);
+  const [shareResume, setShareResume] = useState(null);
 
   // Filtered resumes
   const filteredResumes = useMemo(() => {
@@ -264,6 +267,15 @@ const ResumeList = ({
 
                   <div style={{ display: 'flex', alignItems: 'center', gap: '0.25rem' }}>
                     <button
+                      onClick={() => setShareResume(resume)}
+                      className="btn-icon"
+                      style={{ width: 28, height: 28, color: 'var(--accent-gold, #DFD6AE)' }}
+                      title="Share Public Link"
+                    >
+                      <Share2 size={13} />
+                    </button>
+
+                    <button
                       onClick={() => onDuplicateResume(resume.id)}
                       className="btn-icon"
                       style={{ width: 28, height: 28, color: 'var(--text-secondary)' }}
@@ -360,6 +372,12 @@ const ResumeList = ({
         title="Delete Resume"
         message={`Are you sure you want to permanently delete "${resumeToDelete?.title}"? This cannot be undone.`}
         confirmText="Delete Resume"
+      />
+      {/* Share Resume Public Link Modal */}
+      <ShareResumeModal
+        isOpen={Boolean(shareResume)}
+        onClose={() => setShareResume(null)}
+        resume={shareResume}
       />
     </div>
   );
