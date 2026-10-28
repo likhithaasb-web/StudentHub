@@ -13,6 +13,7 @@ import CareerStudio from './pages/CareerStudio';
 import PublicResume from './pages/PublicResume';
 import Settings from './pages/Settings';
 import Login from './pages/Login';
+import ErrorBoundary from './components/common/ErrorBoundary';
 
 // Protects all dashboard routes: redirects unauthenticated users directly to /login
 const ProtectedRoute = ({ children }) => {
@@ -77,7 +78,9 @@ function App() {
   return (
     <AppProvider>
       <BrowserRouter>
-        <AppRoutes />
+        <ErrorBoundary>
+          <AppRoutes />
+        </ErrorBoundary>
       </BrowserRouter>
     </AppProvider>
   );
