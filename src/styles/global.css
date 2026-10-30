@@ -11,7 +11,7 @@
 }
 
 html {
-  font-size: 16px;
+  font-size: var(--font-base, 16px);
   -webkit-font-smoothing: antialiased;
   -moz-osx-font-smoothing: grayscale;
   scroll-behavior: smooth;
@@ -127,9 +127,9 @@ select {
 .page-container {
   flex: 1;
   padding: 1.75rem 2rem 3rem 2rem;
-  max-width: 1440px;
   width: 100%;
-  margin: 0 auto;
+  max-width: 1600px;
+  box-sizing: border-box;
 }
 
 /* Card Styles */
@@ -137,7 +137,7 @@ select {
   background: var(--bg-card);
   border: 1px solid var(--border-subtle);
   border-radius: var(--radius-lg);
-  padding: 1.35rem;
+  padding: var(--card-padding, 1.35rem);
   box-shadow: var(--shadow-sm);
   transition: transform var(--transition-fast), box-shadow var(--transition-fast), border-color var(--transition-fast);
   position: relative;
@@ -513,3 +513,110 @@ select {
     break-inside: avoid;
   }
 }
+
+/* ==========================================================================
+   Settings Page Premium Full-Width Layout
+   ========================================================================== */
+
+.settings-workspace {
+  display: flex;
+  gap: 28px;
+  width: 100%;
+  max-width: 1500px;
+  align-items: flex-start;
+  margin: 0;
+  box-sizing: border-box;
+}
+
+/* Section 2: Settings Navigation Sidebar (230–250px) */
+.settings-nav-sidebar {
+  width: 240px;
+  flex-shrink: 0;
+  position: sticky;
+  top: 86px;
+  z-index: 10;
+  background-color: var(--bg-secondary);
+  border: 1px solid var(--border-subtle);
+  border-radius: var(--radius-lg);
+  padding: 10px;
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+  box-shadow: var(--shadow-sm);
+}
+
+/* Section 3: Main Settings Workspace Content */
+.settings-main-content {
+  flex: 1;
+  min-width: 0;
+  display: flex;
+  flex-direction: column;
+  gap: 20px;
+}
+
+/* 6-Card Academic Statistics Responsive Grid */
+.settings-stats-grid {
+  display: grid;
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+  gap: 16px;
+}
+
+/* 4-Card Quick Personalization Hub Grid */
+.settings-hub-grid {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 16px;
+}
+
+/* Horizontal scrolling tab bar for tablet/mobile */
+.settings-mobile-tabs-container {
+  display: none;
+  width: 100%;
+  overflow-x: auto;
+  white-space: nowrap;
+  -webkit-overflow-scrolling: touch;
+  scrollbar-width: none;
+  margin-bottom: 8px;
+}
+
+.settings-mobile-tabs-container::-webkit-scrollbar {
+  display: none;
+}
+
+/* Responsive Breakpoints */
+@media (max-width: 1024px) {
+  .settings-workspace {
+    flex-direction: column;
+    gap: 16px;
+  }
+
+  .settings-nav-sidebar {
+    display: none;
+  }
+
+  .settings-mobile-tabs-container {
+    display: flex;
+    gap: 8px;
+    padding-bottom: 6px;
+  }
+
+  .settings-mobile-nav {
+    display: block !important;
+  }
+
+  .settings-stats-grid {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+  }
+}
+
+@media (max-width: 640px) {
+  .settings-stats-grid {
+    grid-template-columns: 1fr;
+  }
+
+  .settings-hub-grid {
+    grid-template-columns: 1fr;
+  }
+}
+
+

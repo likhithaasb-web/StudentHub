@@ -11,6 +11,7 @@ import Note from '../models/Note.js';
 import StudySession from '../models/StudySession.js';
 import Resume from '../models/Resume.js';
 import { authMiddleware } from '../middleware/auth.js';
+import { seedDemoDataForUser } from '../utils/seedDemoData.js';
 
 const router = express.Router();
 
@@ -46,19 +47,8 @@ router.post('/register', async (req, res) => {
     await user.save();
     const token = signToken(user._id);
 
-    // Automatically seed core subjects: CN, MFEF, TRAINING, OT, API, ML
-    const initialSubjects = [
-      { name: 'CN', fullName: 'Computer Networks', color: '#17644D' },
-      { name: 'MFEF', fullName: 'Mathematical Foundations of Economics & Finance', color: '#67e8f9' },
-      { name: 'TRAINING', fullName: 'Technical & Placement Training', color: '#34d399' },
-      { name: 'OT', fullName: 'Optimization Techniques', color: '#f59e0b' },
-      { name: 'API', fullName: 'API Development & Web Services', color: '#a78bfa' },
-      { name: 'ML', fullName: 'Machine Learning', color: '#f87171' },
-    ];
-
-    await AttendanceSubject.insertMany(
-      initialSubjects.map((s) => ({ ...s, userId: user._id }))
-    );
+    // Automatically seed rich demo coursework & records: CN, MFEF, TRAINING, OT, API, ML
+    await seedDemoDataForUser(user._id);
 
     return res.status(201).json({
       message: 'Account registered successfully',
@@ -135,16 +125,13 @@ router.post('/google', async (req, res) => {
         collegeName: 'Verified Google Student',
       });
       await user.save();
-
-      const initialSubjects = [
-        { name: 'CN', fullName: 'Computer Networks', color: '#17644D' },
-        { name: 'MFEF', fullName: 'Mathematical Foundations of Economics & Finance', color: '#67e8f9' },
-        { name: 'TRAINING', fullName: 'Technical & Placement Training', color: '#34d399' },
-        { name: 'OT', fullName: 'Optimization Techniques', color: '#f59e0b' },
-        { name: 'API', fullName: 'API Development & Web Services', color: '#a78bfa' },
-        { name: 'ML', fullName: 'Machine Learning', color: '#f87171' },
-      ];
-      await AttendanceSubject.insertMany(initialSubjects.map((s) => ({ ...s, userId: user._id })));
+      await seedDemoDataForUser(user._id);
+    } else {
+      // If user exists but has 0 tasks or empty schedule, seed full demo coursework
+      const taskCount = await Task.countDocuments({ userId: user._id });
+      if (taskCount === 0) {
+        await seedDemoDataForUser(user._id);
+      }
     }
 
     const token = signToken(user._id);
@@ -211,6 +198,66 @@ router.put('/settings', authMiddleware, async (req, res) => {
     });
   } catch (error) {
     return res.status(500).json({ message: 'Server error updating settings.' });
+  }
+});
+
+// 5. Seed Demo Data Endpoint (can be called by any authenticated student)
+router.post('/seed-demo', authMiddleware, async (req, res) => {
+  try {
+    await seedDemoDataForUser(req.userId);
+    return res.json({ message: 'Demo coursework and timetable seeded successfully.' });
+  } catch (error) {
+    return res.status(500).json({ message: 'Error seeding demo data.', error: error.message });
+  }
+});
+
+// 6. Clear all user coursework records (tasks, timetable, exams, notes, attendance records, study sessions)
+router.post('/clear-data', authMiddleware, async (req, res) => {
+  try {
+    const userId = req.userId;
+    await Promise.all([
+      Task.deleteMany({ userId }),
+      Timetable.deleteMany({ userId }),
+      Exam.deleteMany({ userId }),
+      Note.deleteMany({ userId }),
+      AttendanceRecord.deleteMany({ userId }),
+      StudySession.deleteMany({ userId }),
+    ]);
+    return res.json({ message: 'All user coursework data cleared successfully.' });
+  } catch (error) {
+    return res.status(500).json({ message: 'Error clearing user data.', error: error.message });
+  }
+});
+
+// Change Password Endpoint
+router.put('/change-password', authMiddleware, async (req, res) => {
+  try {
+    const { currentPassword, newPassword } = req.body;
+    if (!currentPassword || !newPassword) {
+      return res.status(400).json({ message: 'Both current password and new password are required.' });
+    }
+    if (newPassword.length < 6) {
+      return res.status(400).json({ message: 'New password must be at least 6 characters long.' });
+    }
+
+    const user = await User.findById(req.userId);
+    if (!user) {
+      return res.status(404).json({ message: 'User not found.' });
+    }
+
+    const isMatch = await bcrypt.compare(currentPassword, user.password);
+    if (!isMatch) {
+      return res.status(400).json({ message: 'Current password does not match.' });
+    }
+
+    const salt = await bcrypt.genSalt(10);
+    user.password = await bcrypt.hash(newPassword, salt);
+    await user.save();
+
+    return res.json({ message: 'Password updated successfully!' });
+  } catch (error) {
+    console.error('Change password error:', error);
+    return res.status(500).json({ message: 'Server error updating password.', error: error.message });
   }
 });
 

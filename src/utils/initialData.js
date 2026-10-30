@@ -24,6 +24,25 @@ export const INITIAL_SETTINGS = {
   targetAttendance: 75,
   dailyStudyGoalMinutes: 120, // 2 hours
   theme: 'dark',
+  semester: 'Semester 5 (Fall 2026)',
+  academicBranch: 'Computer Science & Engineering',
+  cgpaTarget: '8.5',
+  gpaScale: '10.0',
+  // Security & Privacy Settings
+  privacyPin: '',
+  screenLockTimeout: 0,
+  stealthLibraryMode: false,
+  twoFactorEnabled: false,
+  incognitoAiMode: false,
+  // Focus & Pomodoro
+  pomodoroWorkMin: 25,
+  pomodoroShortBreakMin: 5,
+  pomodoroLongBreakMin: 15,
+  soundAlerts: true,
+  // Reminders
+  examReminderDays: 3,
+  shortageNotification: true,
+  dailyReminderToast: true,
 };
 
 // 6 Core Academic Subjects requested by student

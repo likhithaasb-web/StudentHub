@@ -30,6 +30,15 @@ const noteSchema = new mongoose.Schema(
       type: Boolean,
       default: false,
     },
+    attachments: [
+      {
+        name: { type: String, required: true },
+        type: { type: String, default: 'application/octet-stream' },
+        size: { type: Number, default: 0 },
+        data: { type: String, default: '' }, // base64 data URI or preview
+        uploadedAt: { type: Date, default: Date.now },
+      },
+    ],
   },
   {
     timestamps: true,

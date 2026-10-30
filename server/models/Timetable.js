@@ -33,7 +33,7 @@ const timetableSchema = new mongoose.Schema(
     },
     color: {
       type: String,
-      default: '#17644D',
+      default: '#520402',
     },
   },
   {

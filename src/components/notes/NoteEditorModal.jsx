@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import Modal from '../common/Modal';
-import { Pin } from 'lucide-react';
+import { Pin, Paperclip, X, Upload } from 'lucide-react';
 
 const NoteEditorModal = ({ isOpen, onClose, onSave, noteToEdit = null, existingSubjects = [] }) => {
   const [formData, setFormData] = useState({
@@ -9,6 +9,7 @@ const NoteEditorModal = ({ isOpen, onClose, onSave, noteToEdit = null, existingS
     content: '',
     tags: '',
     pinned: false,
+    attachments: [],
   });
 
   const [error, setError] = useState('');
@@ -21,6 +22,7 @@ const NoteEditorModal = ({ isOpen, onClose, onSave, noteToEdit = null, existingS
         content: noteToEdit.content || '',
         tags: Array.isArray(noteToEdit.tags) ? noteToEdit.tags.join(', ') : '',
         pinned: Boolean(noteToEdit.pinned),
+        attachments: Array.isArray(noteToEdit.attachments) ? noteToEdit.attachments : [],
       });
     } else {
       setFormData({
@@ -29,10 +31,44 @@ const NoteEditorModal = ({ isOpen, onClose, onSave, noteToEdit = null, existingS
         content: '',
         tags: '',
         pinned: false,
+        attachments: [],
       });
     }
     setError('');
   }, [noteToEdit, isOpen, existingSubjects]);
+
+  const handleFileUpload = (e) => {
+    const file = e.target.files[0];
+    if (!file) return;
+
+    if (file.size > 20 * 1024 * 1024) {
+      setError('Attached document exceeds 20MB limit.');
+      return;
+    }
+
+    const reader = new FileReader();
+    reader.onload = (loadEvt) => {
+      const newAtt = {
+        name: file.name,
+        type: file.type || 'application/octet-stream',
+        size: file.size,
+        data: loadEvt.target.result,
+        uploadedAt: new Date().toISOString(),
+      };
+      setFormData((prev) => ({
+        ...prev,
+        attachments: [...(prev.attachments || []), newAtt],
+      }));
+    };
+    reader.readAsDataURL(file);
+  };
+
+  const handleRemoveAttachment = (index) => {
+    setFormData((prev) => ({
+      ...prev,
+      attachments: prev.attachments.filter((_, i) => i !== index),
+    }));
+  };
 
   const handleSubmit = (e) => {
     e.preventDefault();
@@ -118,6 +154,84 @@ const NoteEditorModal = ({ isOpen, onClose, onSave, noteToEdit = null, existingS
             onChange={(e) => setFormData({ ...formData, content: e.target.value })}
             style={{ fontFamily: 'inherit', lineHeight: 1.5 }}
           />
+        </div>
+
+        {/* Attached Documents Section (WhatsApp docs, PDFs, etc.) */}
+        <div style={{ marginBottom: '1.25rem' }}>
+          <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', marginBottom: '0.45rem' }}>
+            <label className="form-label" style={{ margin: 0, display: 'flex', alignItems: 'center', gap: '0.35rem' }}>
+              <Paperclip size={14} /> Attached Documents ({formData.attachments?.length || 0})
+            </label>
+            <label
+              style={{
+                fontSize: '0.8rem',
+                color: 'var(--primary)',
+                fontWeight: 600,
+                cursor: 'pointer',
+                display: 'flex',
+                alignItems: 'center',
+                gap: '0.3rem',
+              }}
+            >
+              <Upload size={13} /> Add Document / PDF
+              <input
+                type="file"
+                onChange={handleFileUpload}
+                style={{ display: 'none' }}
+                accept=".pdf,.doc,.docx,.txt,.md,.png,.jpg,.jpeg"
+              />
+            </label>
+          </div>
+
+          {formData.attachments && formData.attachments.length > 0 ? (
+            <div style={{ display: 'flex', flexDirection: 'column', gap: '0.4rem' }}>
+              {formData.attachments.map((att, idx) => (
+                <div
+                  key={idx}
+                  style={{
+                    display: 'flex',
+                    alignItems: 'center',
+                    justifyContent: 'space-between',
+                    padding: '0.5rem 0.75rem',
+                    backgroundColor: 'var(--bg-tertiary)',
+                    borderRadius: 'var(--radius-sm)',
+                    border: '1px solid var(--border-subtle)',
+                    fontSize: '0.8rem',
+                  }}
+                >
+                  <div style={{ display: 'flex', alignItems: 'center', gap: '0.45rem', minWidth: 0 }}>
+                    <Paperclip size={14} color="var(--primary)" />
+                    <span style={{ fontWeight: 600, color: 'var(--text-primary)', overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }}>
+                      {att.name}
+                    </span>
+                    <span style={{ color: 'var(--text-muted)', fontSize: '0.75rem' }}>
+                      ({Math.round((att.size || 0) / 1024)} KB)
+                    </span>
+                  </div>
+                  <button
+                    type="button"
+                    onClick={() => handleRemoveAttachment(idx)}
+                    className="btn-icon"
+                    style={{ width: 22, height: 22 }}
+                    title="Remove attachment"
+                  >
+                    <X size={13} />
+                  </button>
+                </div>
+              ))}
+            </div>
+          ) : (
+            <div
+              style={{
+                fontSize: '0.78rem',
+                color: 'var(--text-muted)',
+                fontStyle: 'italic',
+                padding: '0.4rem 0',
+              }}
+            >
+              No documents attached. You can attach PDFs, Word docs, or images received from WhatsApp.
+            </div>
+          )}
         </div>
 
         <div style={{ display: 'flex', alignItems: 'center', gap: '0.5rem', marginBottom: '1.25rem' }}>

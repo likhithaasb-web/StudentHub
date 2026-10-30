@@ -1,4 +1,5 @@
 import React from 'react';
+import { Link } from 'react-router-dom';
 import { useApp } from '../context/AppContext';
 import { getGreeting, getFormattedCurrentDate, getDaysRemaining } from '../utils/dateUtils';
 import { calculateOverallAttendance } from '../utils/attendanceUtils';
@@ -29,6 +30,7 @@ const Dashboard = () => {
     studySessions,
     settings,
     openQuickAction,
+    resetToDemoData,
   } = useApp();
 
   const greeting = getGreeting();
@@ -93,6 +95,23 @@ const Dashboard = () => {
 
           {/* Quick-action buttons */}
           <div style={{ display: 'flex', alignItems: 'center', gap: '0.6rem', flexWrap: 'wrap' }}>
+            <Link
+              to="/ai"
+              className="btn btn-outline"
+              style={{
+                fontSize: '0.875rem',
+                display: 'flex',
+                alignItems: 'center',
+                gap: '0.4rem',
+                borderColor: 'var(--primary)',
+                color: 'var(--primary)',
+                backgroundColor: 'rgba(23, 100, 77, 0.08)',
+                fontWeight: 700,
+                textDecoration: 'none',
+              }}
+            >
+              <Sparkles size={16} /> Ask AI Copilot
+            </Link>
             <button
               onClick={() => openQuickAction('task')}
               className="btn btn-primary"

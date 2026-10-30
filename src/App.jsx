@@ -10,7 +10,9 @@ import Notes from './pages/Notes';
 import Attendance from './pages/Attendance';
 import StudyPlanner from './pages/StudyPlanner';
 import CareerStudio from './pages/CareerStudio';
+import AiTutor from './pages/AiTutor';
 import PublicResume from './pages/PublicResume';
+import PublicNote from './pages/PublicNote';
 import Settings from './pages/Settings';
 import Login from './pages/Login';
 import ErrorBoundary from './components/common/ErrorBoundary';
@@ -49,6 +51,9 @@ function AppRoutes() {
       {/* Public Shareable Resume Route (Open to recruiters without login) */}
       <Route path="/r/:shareId" element={<PublicResume />} />
 
+      {/* Public Shareable Note Route (Open to classmates without login) */}
+      <Route path="/notes/share/:shareId" element={<PublicNote />} />
+
       {/* Main Dashboard & Feature Pages (Protected) */}
       <Route
         path="/"
@@ -63,6 +68,9 @@ function AppRoutes() {
         <Route path="timetable" element={<Timetable />} />
         <Route path="exams" element={<Exams />} />
         <Route path="notes" element={<Notes />} />
+        <Route path="ai" element={<AiTutor />} />
+        <Route path="ai-tutor" element={<Navigate to="/ai" replace />} />
+        <Route path="academic-copilot" element={<Navigate to="/ai" replace />} />
         <Route path="attendance" element={<Attendance />} />
         <Route path="study-planner" element={<StudyPlanner />} />
         <Route path="career" element={<CareerStudio />} />

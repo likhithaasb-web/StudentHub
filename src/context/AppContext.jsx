@@ -1,5 +1,6 @@
-import React, { createContext, useContext, useState, useEffect, useMemo } from 'react';
+import React, { createContext, useContext, useState, useEffect, useMemo, useCallback } from 'react';
 import { storage, generateId } from '../utils/storage';
+import { api, getAuthToken, setAuthToken } from '../utils/api';
 import {
   INITIAL_SETTINGS,
   INITIAL_TASKS,
@@ -22,8 +23,26 @@ export const AppProvider = ({ children }) => {
   const [theme, setTheme] = useState(() => storage.get('theme', 'dark'));
 
   useEffect(() => {
-    document.documentElement.setAttribute('data-theme', theme);
+    const applyTheme = (current) => {
+      let resolved = current;
+      if (current === 'system') {
+        const isDark = typeof window !== 'undefined' && window.matchMedia && window.matchMedia('(prefers-color-scheme: dark)').matches;
+        resolved = isDark ? 'dark' : 'light';
+      }
+      document.documentElement.setAttribute('data-theme', resolved);
+    };
+
+    applyTheme(theme);
     storage.set('theme', theme);
+
+    if (theme === 'system' && typeof window !== 'undefined' && window.matchMedia) {
+      const mediaQuery = window.matchMedia('(prefers-color-scheme: dark)');
+      const handleChange = (e) => {
+        document.documentElement.setAttribute('data-theme', e.matches ? 'dark' : 'light');
+      };
+      mediaQuery.addEventListener('change', handleChange);
+      return () => mediaQuery.removeEventListener('change', handleChange);
+    }
   }, [theme]);
 
   const toggleTheme = () => {
@@ -32,6 +51,70 @@ export const AppProvider = ({ children }) => {
 
   // 2. Settings & Auth State
   const [settings, setSettings] = useState(() => storage.get('settings', INITIAL_SETTINGS));
+
+  useEffect(() => {
+    if (settings) {
+      document.documentElement.setAttribute('data-density', settings.density || 'comfortable');
+      document.documentElement.setAttribute('data-font-size', settings.fontSize || 'medium');
+      document.documentElement.setAttribute('data-reduced-motion', settings.reducedMotion ? 'true' : 'false');
+    }
+  }, [settings?.density, settings?.fontSize, settings?.reducedMotion]);
+  const [isScreenLocked, setIsScreenLocked] = useState(() => storage.get('isScreenLocked', false));
+
+  const lockScreen = useCallback(() => {
+    setIsScreenLocked(true);
+    storage.set('isScreenLocked', true);
+  }, []);
+
+  const unlockScreen = useCallback((pin) => {
+    if (!settings.privacyPin || settings.privacyPin === pin) {
+      setIsScreenLocked(false);
+      storage.set('isScreenLocked', false);
+      return true;
+    }
+    return false;
+  }, [settings.privacyPin]);
+
+  // 2b. MongoDB & Backend Connection Health State
+  const [dbStatus, setDbStatus] = useState({
+    connected: false,
+    checking: true,
+    service: 'StudentHub API',
+    database: 'studenthub',
+    host: '127.0.0.1:27017',
+    lastChecked: null,
+  });
+
+  const checkDbConnection = useCallback(async () => {
+    try {
+      const health = await api.checkHealth();
+      if (health && health.status === 'ok') {
+        const isDbReady = health.database === 'connected';
+        setDbStatus({
+          connected: isDbReady,
+          checking: false,
+          service: health.service || 'StudentHub API',
+          database: 'studenthub',
+          host: '127.0.0.1:27017',
+          lastChecked: new Date().toLocaleTimeString(),
+        });
+        return isDbReady;
+      }
+    } catch {}
+    setDbStatus((prev) => ({
+      ...prev,
+      connected: false,
+      checking: false,
+      lastChecked: new Date().toLocaleTimeString(),
+    }));
+    return false;
+  }, []);
+
+  useEffect(() => {
+    checkDbConnection();
+    const interval = setInterval(checkDbConnection, 25000);
+    return () => clearInterval(interval);
+  }, [checkDbConnection]);
 
   // Authentication is session-scoped:
   // Fresh visits and new browser tabs ALWAYS open the Login page first.
@@ -54,6 +137,15 @@ export const AppProvider = ({ children }) => {
       storage.set('settings', updated);
       return updated;
     });
+    if (getAuthToken()) {
+      api.put('/auth/settings', {
+        name: newSettings.studentName,
+        collegeName: newSettings.collegeName,
+        targetAttendance: newSettings.targetAttendance,
+        dailyStudyGoalMinutes: newSettings.dailyStudyGoalMinutes,
+        theme: newSettings.theme,
+      }).catch(() => {});
+    }
   };
 
   const login = (email, password) => {
@@ -87,6 +179,7 @@ export const AppProvider = ({ children }) => {
     try {
       sessionStorage.removeItem('studenthub_auth_session_active');
       localStorage.removeItem('studenthub_auth_session_active');
+      setAuthToken(null);
     } catch {}
   };
 
@@ -120,6 +213,78 @@ export const AppProvider = ({ children }) => {
     return true;
   };
 
+  // 2c. Synchronize Data From MongoDB on Authentication
+  useEffect(() => {
+    if (!isAuthenticated) return;
+    const token = getAuthToken();
+    if (!token) return;
+
+    let isMounted = true;
+    const syncFromMongoDB = async () => {
+      const isOnline = await checkDbConnection();
+      if (!isOnline || !isMounted) return;
+
+      try {
+        const userRes = await api.get('/auth/me').catch(() => null);
+        if (userRes?.user && isMounted) {
+          setSettings((prev) => {
+            const updated = {
+              ...prev,
+              studentName: userRes.user.name || prev.studentName,
+              collegeName: userRes.user.collegeName || prev.collegeName,
+              targetAttendance: userRes.user.targetAttendance || prev.targetAttendance,
+              dailyStudyGoalMinutes: userRes.user.dailyStudyGoalMinutes || prev.dailyStudyGoalMinutes,
+            };
+            storage.set('settings', updated);
+            return updated;
+          });
+        }
+
+        if (Array.isArray(subRes) && subRes.length > 0 && isMounted) {
+          setAttendanceSubjects(subRes);
+          storage.set('attendance_subjects', subRes);
+        }
+
+        if (Array.isArray(recRes) && isMounted) {
+          setAttendanceRecords(recRes);
+          storage.set('attendance_records', recRes);
+        }
+
+        if (Array.isArray(taskRes) && isMounted) {
+          setTasks(taskRes);
+          storage.set('tasks', taskRes);
+        }
+
+        if (Array.isArray(ttRes) && isMounted) {
+          setTimetable(ttRes);
+          storage.set('timetable', ttRes);
+        }
+
+        if (Array.isArray(examRes) && isMounted) {
+          setExams(examRes);
+          storage.set('exams', examRes);
+        }
+
+        if (Array.isArray(noteRes) && isMounted) {
+          setNotes(noteRes);
+          storage.set('notes', noteRes);
+        }
+
+        if (Array.isArray(studyRes) && isMounted) {
+          setStudySessions(studyRes);
+          storage.set('studySessions', studyRes);
+        }
+      } catch (err) {
+        console.warn('[MongoDB] Sync note:', err.message);
+      }
+    };
+
+    syncFromMongoDB();
+    return () => {
+      isMounted = false;
+    };
+  }, [isAuthenticated, checkDbConnection]);
+
   // 3. Tasks State
   const [tasks, setTasks] = useState(() => storage.get('tasks', INITIAL_TASKS));
 
@@ -139,30 +304,53 @@ export const AppProvider = ({ children }) => {
       storage.set('tasks', updated);
       return updated;
     });
+
+    if (getAuthToken()) {
+      api.post('/tasks', newTask)
+        .then((saved) => {
+          if (saved && (saved._id || saved.id)) {
+            const dbId = saved._id || saved.id;
+            setTasks((prev) => {
+              const mapped = prev.map((t) => (t.id === newTask.id ? { ...t, id: dbId, _id: dbId } : t));
+              storage.set('tasks', mapped);
+              return mapped;
+            });
+          }
+        })
+        .catch(() => {});
+    }
+
     return newTask;
   };
 
   const updateTask = (id, taskData) => {
     setTasks((prev) => {
-      const updated = prev.map((t) => (t.id === id ? { ...t, ...taskData } : t));
+      const updated = prev.map((t) => (t.id === id || t._id === id ? { ...t, ...taskData } : t));
       storage.set('tasks', updated);
       return updated;
     });
+    if (getAuthToken()) {
+      api.put(`/tasks/${id}`, taskData).catch(() => {});
+    }
   };
 
   const deleteTask = (id) => {
     setTasks((prev) => {
-      const updated = prev.filter((t) => t.id !== id);
+      const updated = prev.filter((t) => t.id !== id && t._id !== id);
       storage.set('tasks', updated);
       return updated;
     });
+    if (getAuthToken()) {
+      api.delete(`/tasks/${id}`).catch(() => {});
+    }
   };
 
   const toggleTaskStatus = (id) => {
+    let nextStatus = 'Pending';
     setTasks((prev) => {
       const updated = prev.map((t) => {
-        if (t.id === id) {
-          const nextStatus = t.status === 'Completed' ? 'Pending' : 'Completed';
+        if (t.id === id || t._id === id) {
+          nextStatus = t.status === 'Completed' ? 'Pending' : 'Completed';
           return { ...t, status: nextStatus };
         }
         return t;
@@ -170,6 +358,9 @@ export const AppProvider = ({ children }) => {
       storage.set('tasks', updated);
       return updated;
     });
+    if (getAuthToken()) {
+      api.put(`/tasks/${id}`, { status: nextStatus }).catch(() => {});
+    }
   };
 
   // 4. Timetable State
@@ -183,30 +374,48 @@ export const AppProvider = ({ children }) => {
       classroom: sessionData.classroom?.trim() || '',
       startTime: sessionData.startTime,
       endTime: sessionData.endTime,
-      color: sessionData.color || '#6366f1',
+      color: sessionData.color || '#17644D',
     };
     setTimetable((prev) => {
       const updated = [...prev, newSession];
       storage.set('timetable', updated);
       return updated;
     });
+
+    if (getAuthToken()) {
+      api.post('/timetable', newSession)
+        .then((saved) => {
+          if (saved && (saved._id || saved.id)) {
+            const dbId = saved._id || saved.id;
+            setTimetable((prev) => prev.map((s) => (s.id === newSession.id ? { ...s, id: dbId, _id: dbId } : s)));
+          }
+        })
+        .catch(() => {});
+    }
+
     return newSession;
   };
 
   const updateClassSession = (id, sessionData) => {
     setTimetable((prev) => {
-      const updated = prev.map((s) => (s.id === id ? { ...s, ...sessionData } : s));
+      const updated = prev.map((s) => (s.id === id || s._id === id ? { ...s, ...sessionData } : s));
       storage.set('timetable', updated);
       return updated;
     });
+    if (getAuthToken()) {
+      api.put(`/timetable/${id}`, sessionData).catch(() => {});
+    }
   };
 
   const deleteClassSession = (id) => {
     setTimetable((prev) => {
-      const updated = prev.filter((s) => s.id !== id);
+      const updated = prev.filter((s) => s.id !== id && s._id !== id);
       storage.set('timetable', updated);
       return updated;
     });
+    if (getAuthToken()) {
+      api.delete(`/timetable/${id}`).catch(() => {});
+    }
   };
 
   // 5. Exams State
@@ -227,31 +436,59 @@ export const AppProvider = ({ children }) => {
       storage.set('exams', updated);
       return updated;
     });
+
+    if (getAuthToken()) {
+      api.post('/exams', newExam)
+        .then((saved) => {
+          if (saved && (saved._id || saved.id)) {
+            const dbId = saved._id || saved.id;
+            setExams((prev) => prev.map((e) => (e.id === newExam.id ? { ...e, id: dbId, _id: dbId } : e)));
+          }
+        })
+        .catch(() => {});
+    }
+
     return newExam;
   };
 
   const updateExam = (id, examData) => {
     setExams((prev) => {
-      const updated = prev.map((e) => (e.id === id ? { ...e, ...examData } : e));
+      const updated = prev.map((e) => (e.id === id || e._id === id ? { ...e, ...examData } : e));
       storage.set('exams', updated);
       return updated;
     });
+    if (getAuthToken()) {
+      api.put(`/exams/${id}`, examData).catch(() => {});
+    }
   };
 
   const deleteExam = (id) => {
     setExams((prev) => {
-      const updated = prev.filter((e) => e.id !== id);
+      const updated = prev.filter((e) => e.id !== id && e._id !== id);
       storage.set('exams', updated);
       return updated;
     });
+    if (getAuthToken()) {
+      api.delete(`/exams/${id}`).catch(() => {});
+    }
   };
 
   const toggleExamCompleted = (id) => {
+    let nextVal = false;
     setExams((prev) => {
-      const updated = prev.map((e) => (e.id === id ? { ...e, completed: !e.completed } : e));
+      const updated = prev.map((e) => {
+        if (e.id === id || e._id === id) {
+          nextVal = !e.completed;
+          return { ...e, completed: nextVal };
+        }
+        return e;
+      });
       storage.set('exams', updated);
       return updated;
     });
+    if (getAuthToken()) {
+      api.put(`/exams/${id}`, { completed: nextVal }).catch(() => {});
+    }
   };
 
   // 6. Notes State
@@ -274,13 +511,25 @@ export const AppProvider = ({ children }) => {
       storage.set('notes', updated);
       return updated;
     });
+
+    if (getAuthToken()) {
+      api.post('/notes', newNote)
+        .then((saved) => {
+          if (saved && (saved._id || saved.id)) {
+            const dbId = saved._id || saved.id;
+            setNotes((prev) => prev.map((n) => (n.id === newNote.id ? { ...n, id: dbId, _id: dbId } : n)));
+          }
+        })
+        .catch(() => {});
+    }
+
     return newNote;
   };
 
   const updateNote = (id, noteData) => {
     setNotes((prev) => {
       const updated = prev.map((n) => {
-        if (n.id === id) {
+        if (n.id === id || n._id === id) {
           const tags = Array.isArray(noteData.tags)
             ? noteData.tags
             : noteData.tags ? noteData.tags.split(',').map((t) => t.trim().toLowerCase()).filter(Boolean) : n.tags;
@@ -296,22 +545,38 @@ export const AppProvider = ({ children }) => {
       storage.set('notes', updated);
       return updated;
     });
+    if (getAuthToken()) {
+      api.put(`/notes/${id}`, noteData).catch(() => {});
+    }
   };
 
   const deleteNote = (id) => {
     setNotes((prev) => {
-      const updated = prev.filter((n) => n.id !== id);
+      const updated = prev.filter((n) => n.id !== id && n._id !== id);
       storage.set('notes', updated);
       return updated;
     });
+    if (getAuthToken()) {
+      api.delete(`/notes/${id}`).catch(() => {});
+    }
   };
 
   const togglePinNote = (id) => {
+    let nextPinned = false;
     setNotes((prev) => {
-      const updated = prev.map((n) => (n.id === id ? { ...n, pinned: !n.pinned } : n));
+      const updated = prev.map((n) => {
+        if (n.id === id || n._id === id) {
+          nextPinned = !n.pinned;
+          return { ...n, pinned: nextPinned };
+        }
+        return n;
+      });
       storage.set('notes', updated);
       return updated;
     });
+    if (getAuthToken()) {
+      api.put(`/notes/${id}`, { pinned: nextPinned }).catch(() => {});
+    }
   };
 
   // 7. Personal Attendance Tracker State (Subject & Class-Record Driven)
@@ -377,6 +642,17 @@ export const AppProvider = ({ children }) => {
       return updated;
     });
 
+    if (getAuthToken()) {
+      api.post('/attendance/subjects', newSubject)
+        .then((saved) => {
+          if (saved && (saved._id || saved.id)) {
+            const dbId = saved._id || saved.id;
+            setAttendanceSubjects((prev) => prev.map((s) => (s.id === newSubject.id ? { ...s, id: dbId, _id: dbId } : s)));
+          }
+        })
+        .catch(() => {});
+    }
+
     return newSubject;
   };
 
@@ -385,7 +661,7 @@ export const AppProvider = ({ children }) => {
     setAttendanceSubjects((prev) => {
       let oldName = null;
       const updated = prev.map((s) => {
-        if (s.id === id) {
+        if (s.id === id || s._id === id) {
           oldName = s.name;
           return {
             ...s,
@@ -411,14 +687,18 @@ export const AppProvider = ({ children }) => {
 
       return updated;
     });
+
+    if (getAuthToken()) {
+      api.put(`/attendance/subjects/${id}`, subjectData).catch(() => {});
+    }
   };
 
   const deleteAttendanceSubject = (id) => {
     let deletedName = null;
     setAttendanceSubjects((prev) => {
-      const target = prev.find((s) => s.id === id);
+      const target = prev.find((s) => s.id === id || s._id === id);
       if (target) deletedName = target.name;
-      const updated = prev.filter((s) => s.id !== id);
+      const updated = prev.filter((s) => s.id !== id && s._id !== id);
       storage.set('attendance_subjects', updated);
       return updated;
     });
@@ -429,6 +709,10 @@ export const AppProvider = ({ children }) => {
         storage.set('attendance_records', updated);
         return updated;
       });
+    }
+
+    if (getAuthToken()) {
+      api.delete(`/attendance/subjects/${id}`).catch(() => {});
     }
   };
 
@@ -449,13 +733,24 @@ export const AppProvider = ({ children }) => {
       return updated;
     });
 
+    if (getAuthToken()) {
+      api.post('/attendance/records', newRecord)
+        .then((saved) => {
+          if (saved && (saved._id || saved.id)) {
+            const dbId = saved._id || saved.id;
+            setAttendanceRecords((prev) => prev.map((r) => (r.id === newRecord.id ? { ...r, id: dbId, _id: dbId } : r)));
+          }
+        })
+        .catch(() => {});
+    }
+
     return newRecord;
   };
 
   const updateAttendanceRecord = (id, updatedData) => {
     setAttendanceRecords((prev) => {
       const updated = prev.map((rec) => {
-        if (rec.id === id) {
+        if (rec.id === id || rec._id === id) {
           return {
             ...rec,
             ...updatedData,
@@ -468,23 +763,33 @@ export const AppProvider = ({ children }) => {
       storage.set('attendance_records', updated);
       return updated;
     });
+
+    if (getAuthToken()) {
+      api.put(`/attendance/records/${id}`, updatedData).catch(() => {});
+    }
   };
 
   const deleteAttendanceRecord = (id) => {
     setAttendanceRecords((prev) => {
-      const updated = prev.filter((rec) => rec.id !== id);
+      const updated = prev.filter((rec) => rec.id !== id && rec._id !== id);
       storage.set('attendance_records', updated);
       return updated;
     });
+
+    if (getAuthToken()) {
+      api.delete(`/attendance/records/${id}`).catch(() => {});
+    }
   };
 
   const toggleAttendanceRecordStatus = (id) => {
+    let nextStatus = 'Present';
     setAttendanceRecords((prev) => {
       const updated = prev.map((rec) => {
-        if (rec.id === id) {
+        if (rec.id === id || rec._id === id) {
+          nextStatus = rec.status === 'Present' ? 'Absent' : 'Present';
           return {
             ...rec,
-            status: rec.status === 'Present' ? 'Absent' : 'Present',
+            status: nextStatus,
           };
         }
         return rec;
@@ -492,6 +797,10 @@ export const AppProvider = ({ children }) => {
       storage.set('attendance_records', updated);
       return updated;
     });
+
+    if (getAuthToken()) {
+      api.put(`/attendance/records/${id}`, { status: nextStatus }).catch(() => {});
+    }
   };
 
   // Convenience helper to quickly record today's class
@@ -549,15 +858,30 @@ export const AppProvider = ({ children }) => {
       storage.set('studySessions', updated);
       return updated;
     });
+
+    if (getAuthToken()) {
+      api.post('/study-sessions', newSession)
+        .then((saved) => {
+          if (saved && (saved._id || saved.id)) {
+            const dbId = saved._id || saved.id;
+            setStudySessions((prev) => prev.map((s) => (s.id === newSession.id ? { ...s, id: dbId, _id: dbId } : s)));
+          }
+        })
+        .catch(() => {});
+    }
+
     return newSession;
   };
 
   const deleteStudySession = (id) => {
     setStudySessions((prev) => {
-      const updated = prev.filter((s) => s.id !== id);
+      const updated = prev.filter((s) => s.id !== id && s._id !== id);
       storage.set('studySessions', updated);
       return updated;
     });
+    if (getAuthToken()) {
+      api.delete(`/study-sessions/${id}`).catch(() => {});
+    }
   };
 
   // 9. Notifications Engine
@@ -676,8 +1000,16 @@ export const AppProvider = ({ children }) => {
 
   // 11. Reset and Clear Utilities
   const resetToDemoData = () => {
-    storage.clearAll();
-    setSettings(INITIAL_SETTINGS);
+    // Preserve currently logged-in student's identity (e.g. Sai likhitha Adda)
+    const preservedSettings = {
+      ...INITIAL_SETTINGS,
+      studentName: settings.studentName || 'Student',
+      email: settings.email || '',
+      collegeName: settings.collegeName || 'University Student',
+      theme: theme,
+    };
+
+    setSettings(preservedSettings);
     setTasks(INITIAL_TASKS);
     setTimetable(INITIAL_TIMETABLE);
     setExams(INITIAL_EXAMS);
@@ -686,7 +1018,8 @@ export const AppProvider = ({ children }) => {
     setAttendanceRecords(INITIAL_ATTENDANCE_RECORDS);
     setStudySessions(INITIAL_STUDY_SESSIONS);
     setDismissedNotifications([]);
-    storage.set('settings', INITIAL_SETTINGS);
+
+    storage.set('settings', preservedSettings);
     storage.set('tasks', INITIAL_TASKS);
     storage.set('timetable', INITIAL_TIMETABLE);
     storage.set('exams', INITIAL_EXAMS);
@@ -696,11 +1029,87 @@ export const AppProvider = ({ children }) => {
     storage.set('attendance', INITIAL_ATTENDANCE);
     storage.set('studySessions', INITIAL_STUDY_SESSIONS);
     resumeStorage.restoreDemoResumes();
+
+    // Sync seed to MongoDB backend
+    if (getAuthToken()) {
+      api.post('/auth/seed-demo').catch(() => {});
+    }
   };
+
+  const clearUserData = () => {
+    setTasks([]);
+    setTimetable([]);
+    setExams([]);
+    setNotes([]);
+    setAttendanceRecords([]);
+    setStudySessions([]);
+    setDismissedNotifications([]);
+
+    storage.set('tasks', []);
+    storage.set('timetable', []);
+    storage.set('exams', []);
+    storage.set('notes', []);
+    storage.set('attendance_records', []);
+    storage.set('studySessions', []);
+
+    if (getAuthToken()) {
+      api.post('/auth/clear-data').catch(() => {});
+    }
+  };
+
+  const exportFullBackup = useCallback(() => {
+    const backupData = {
+      app: 'StudentHub',
+      version: '2.0.0',
+      exportedAt: new Date().toISOString(),
+      studentName: settings.studentName || 'Student',
+      settings,
+      tasks: storage.get('tasks', []),
+      timetable: storage.get('timetable', []),
+      exams: storage.get('exams', []),
+      notes: storage.get('notes', []),
+      attendance: storage.get('attendance', []),
+      attendanceSubjects: storage.get('attendanceSubjects', []),
+      attendanceRecords: storage.get('attendanceRecords', []),
+      studySessions: storage.get('studySessions', []),
+    };
+    const blob = new Blob([JSON.stringify(backupData, null, 2)], { type: 'application/json' });
+    const url = URL.createObjectURL(blob);
+    const a = document.createElement('a');
+    a.href = url;
+    a.download = `StudentHub_Backup_${(settings.studentName || 'Student').replace(/\s+/g, '_')}_${new Date().toISOString().split('T')[0]}.json`;
+    document.body.appendChild(a);
+    a.click();
+    document.body.removeChild(a);
+    URL.revokeObjectURL(url);
+  }, [settings]);
+
+  const importFullBackup = useCallback((jsonData) => {
+    try {
+      const data = typeof jsonData === 'string' ? JSON.parse(jsonData) : jsonData;
+      if (!data || typeof data !== 'object') throw new Error('Invalid backup file.');
+      if (data.settings) {
+        setSettings(data.settings);
+        storage.set('settings', data.settings);
+      }
+      if (data.tasks) { setTasks(data.tasks); storage.set('tasks', data.tasks); }
+      if (data.timetable) { setTimetable(data.timetable); storage.set('timetable', data.timetable); }
+      if (data.exams) { setExams(data.exams); storage.set('exams', data.exams); }
+      if (data.notes) { setNotes(data.notes); storage.set('notes', data.notes); }
+      if (data.attendance) { setAttendance(data.attendance); storage.set('attendance', data.attendance); }
+      if (data.attendanceSubjects) { setAttendanceSubjects(data.attendanceSubjects); storage.set('attendanceSubjects', data.attendanceSubjects); }
+      if (data.attendanceRecords) { setAttendanceRecords(data.attendanceRecords); storage.set('attendanceRecords', data.attendanceRecords); }
+      if (data.studySessions) { setStudySessions(data.studySessions); storage.set('studySessions', data.studySessions); }
+      return { success: true };
+    } catch (e) {
+      return { success: false, error: e.message };
+    }
+  }, []);
 
   const clearAllData = () => {
     storage.clearAll();
     resumeStorage.clearAllResumes();
+    setAuthToken(null);
     const blankSettings = {
       studentName: 'Student',
       collegeName: '',
@@ -725,6 +1134,7 @@ export const AppProvider = ({ children }) => {
       value={{
         theme,
         toggleTheme,
+        setTheme,
         settings,
         updateSettings,
         isAuthenticated,
@@ -769,6 +1179,8 @@ export const AppProvider = ({ children }) => {
         studySessions,
         addStudySession,
         deleteStudySession,
+        dbStatus,
+        checkDbConnection,
         notifications,
         dismissNotification,
         clearAllNotifications,
@@ -778,7 +1190,13 @@ export const AppProvider = ({ children }) => {
         openQuickAction,
         closeQuickAction,
         resetToDemoData,
+        clearUserData,
         clearAllData,
+        isScreenLocked,
+        lockScreen,
+        unlockScreen,
+        exportFullBackup,
+        importFullBackup,
       }}
     >
       {children}

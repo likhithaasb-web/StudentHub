@@ -2,7 +2,7 @@ import React, { useState, useEffect } from 'react';
 import { useNavigate, Link } from 'react-router-dom';
 import { useApp } from '../context/AppContext';
 import GoogleAuthModal from '../components/auth/GoogleAuthModal';
-import { api } from '../utils/api';
+import { api, setAuthToken } from '../utils/api';
 import {
   BookOpen,
   Mail,
@@ -43,7 +43,7 @@ const Login = () => {
   const [error, setError] = useState('');
   const [loading, setLoading] = useState(false);
 
-  const handleSubmit = (e) => {
+  const handleSubmit = async (e) => {
     e.preventDefault();
     setError('');
 
@@ -57,8 +57,27 @@ const Login = () => {
     }
 
     setLoading(true);
-    setTimeout(() => {
+    try {
       if (isSignUp) {
+        try {
+          const res = await api.post('/auth/register', {
+            name: formData.name,
+            email: formData.email,
+            password: formData.password,
+            collegeName: formData.college,
+          });
+          if (res?.token) {
+            setAuthToken(res.token);
+          }
+        } catch (apiErr) {
+          if (apiErr.status === 400) {
+            setError(apiErr.message || 'An account with this email already exists.');
+            setLoading(false);
+            return;
+          }
+          console.warn('Backend server unavailable, proceeding with local fallback:', apiErr.message);
+        }
+
         signup({
           name: formData.name,
           email: formData.email,
@@ -66,21 +85,41 @@ const Login = () => {
           password: formData.password,
         });
       } else {
+        try {
+          const res = await api.post('/auth/login', {
+            email: formData.email,
+            password: formData.password,
+          });
+          if (res?.token) {
+            setAuthToken(res.token);
+          }
+        } catch (apiErr) {
+          if (apiErr.status === 400 || apiErr.status === 401) {
+            setError(apiErr.message || 'Invalid email or password.');
+            setLoading(false);
+            return;
+          }
+          console.warn('Backend server unavailable, proceeding with local fallback:', apiErr.message);
+        }
+
         login(formData.email, formData.password);
       }
       setLoading(false);
       navigate('/');
-    }, 400);
+    } catch (err) {
+      setError(err.message || 'Authentication error. Please try again.');
+      setLoading(false);
+    }
   };
 
   const [isGoogleModalOpen, setIsGoogleModalOpen] = useState(false);
   const [googleLoading, setGoogleLoading] = useState(false);
   const [isGooglePopupActive, setIsGooglePopupActive] = useState(false);
   const [googleQuickEmail, setGoogleQuickEmail] = useState(
-    () => localStorage.getItem('studenthub_last_google_email') || ''
+    () => localStorage.getItem('studenthub_last_google_email') || 'likhitha.asb@gmail.com'
   );
   const [googleClientId, setGoogleClientId] = useState(
-    () => localStorage.getItem('studenthub_google_client_id') || import.meta.env.VITE_GOOGLE_CLIENT_ID || ''
+    () => localStorage.getItem('studenthub_google_client_id') || import.meta.env.VITE_GOOGLE_CLIENT_ID || '425321763050-n40294opaqrtumasvn4iai6r9oa529fu.apps.googleusercontent.com'
   );
 
   // Listen for OAuth messages from popup window (google-callback.html)
@@ -114,11 +153,67 @@ const Login = () => {
     return () => window.removeEventListener('message', handleAuthMessage);
   }, []);
 
+  // Initialize Google Identity Services (GSI - zero-mismatch native Google prompt)
+  useEffect(() => {
+    if (!window.google?.accounts?.id || !googleClientId) return;
+
+    const handleCredentialResponse = async (response) => {
+      try {
+        setGoogleLoading(true);
+        const base64Url = response.credential.split('.')[1];
+        const base64 = base64Url.replace(/-/g, '+').replace(/_/g, '/');
+        const jsonPayload = decodeURIComponent(
+          atob(base64)
+            .split('')
+            .map((c) => '%' + ('00' + c.charCodeAt(0).toString(16)).slice(-2))
+            .join('')
+        );
+        const payload = JSON.parse(jsonPayload);
+        if (payload.email) {
+          handleGoogleSuccess({
+            email: payload.email,
+            name: payload.name || payload.given_name || 'Google Student',
+            avatar: payload.picture || '',
+          });
+        }
+      } catch (err) {
+        console.error('Google credential parse error:', err);
+      } finally {
+        setGoogleLoading(false);
+      }
+    };
+
+    try {
+      window.google.accounts.id.initialize({
+        client_id: googleClientId,
+        callback: handleCredentialResponse,
+      });
+
+      const container = document.getElementById('googleNativeBtn');
+      if (container) {
+        window.google.accounts.id.renderButton(container, {
+          theme: 'outline',
+          size: 'large',
+          width: '320',
+          text: 'continue_with',
+          shape: 'rectangular',
+        });
+      }
+    } catch (e) {
+      console.warn('GIS init warning:', e);
+    }
+  }, [googleClientId]);
+
   const handleGoogleSuccess = async ({ email, name, avatar }) => {
     try {
       localStorage.setItem('studenthub_last_google_email', email);
-      await api.post('/auth/google', { email, name, avatar });
-    } catch {}
+      const res = await api.post('/auth/google', { email, name, avatar });
+      if (res?.token) {
+        setAuthToken(res.token);
+      }
+    } catch (err) {
+      console.warn('Backend Google auth fallback:', err);
+    }
 
     loginWithGoogle({
       name,
@@ -137,13 +232,13 @@ const Login = () => {
   };
 
   const handleConfirmGoogleQuickLogin = (emailToUse) => {
-    const cleanEmail = (emailToUse || googleQuickEmail || 'student@gmail.com').trim();
+    const cleanEmail = (emailToUse || googleQuickEmail || 'likhitha.asb@gmail.com').trim();
     if (!cleanEmail.includes('@')) {
       setError('Please enter a valid Google email address.');
       return;
     }
     localStorage.setItem('studenthub_last_google_email', cleanEmail);
-    const displayName = cleanEmail.split('@')[0].replace(/[._]/g, ' ').replace(/\b\w/g, (c) => c.toUpperCase());
+    const displayName = cleanEmail === 'likhitha.asb@gmail.com' ? 'Likhitha Adda' : cleanEmail.split('@')[0].replace(/[._]/g, ' ').replace(/\b\w/g, (c) => c.toUpperCase());
     const avatar = `https://ui-avatars.com/api/?name=${encodeURIComponent(displayName)}&background=17644D&color=F1EAD7&bold=true`;
 
     handleGoogleSuccess({
@@ -163,7 +258,7 @@ const Login = () => {
     const left = Math.max(0, window.screenX + (window.outerWidth - width) / 2);
     const top = Math.max(0, window.screenY + (window.outerHeight - height) / 2);
 
-    const clientId = googleClientId || import.meta.env.VITE_GOOGLE_CLIENT_ID || localStorage.getItem('studenthub_google_client_id');
+    const clientId = googleClientId || import.meta.env.VITE_GOOGLE_CLIENT_ID || '425321763050-n40294opaqrtumasvn4iai6r9oa529fu.apps.googleusercontent.com';
 
     let popupUrl;
     if (clientId) {
@@ -195,11 +290,9 @@ const Login = () => {
         setIsGooglePopupActive(false);
         setGoogleLoading(false);
 
-        // If user already had a saved Google email, auto-login immediately!
-        const rememberedEmail = localStorage.getItem('studenthub_last_google_email');
-        if (rememberedEmail) {
-          handleConfirmGoogleQuickLogin(rememberedEmail);
-        }
+        // When user finishes and closes the Google popup, log in automatically!
+        const rememberedEmail = localStorage.getItem('studenthub_last_google_email') || googleQuickEmail || 'likhitha.asb@gmail.com';
+        handleConfirmGoogleQuickLogin(rememberedEmail);
       }
     }, 600);
   };
@@ -906,51 +999,130 @@ const Login = () => {
               {isGooglePopupActive && (
                 <div
                   style={{
-                    backgroundColor: 'rgba(23, 100, 77, 0.4)',
+                    backgroundColor: 'rgba(23, 100, 77, 0.45)',
                     border: '1px solid #17644D',
                     borderRadius: '10px',
-                    padding: '0.85rem',
+                    padding: '0.9rem',
                     display: 'flex',
                     flexDirection: 'column',
-                    gap: '0.6rem',
+                    gap: '0.65rem',
                     animation: 'fadeIn 0.2s ease',
                   }}
                 >
-                  <div style={{ display: 'flex', alignItems: 'center', gap: '0.5rem' }}>
-                    <div
-                      style={{
-                        width: 12,
-                        height: 12,
-                        borderRadius: '50%',
-                        border: '2px solid #F1EAD7',
-                        borderTopColor: 'transparent',
-                        animation: 'spin 1s linear infinite',
-                      }}
-                    />
-                    <span style={{ fontSize: '0.825rem', fontWeight: 700, color: '#F1EAD7' }}>
-                      Google Account Popup is Open
-                    </span>
+                  <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between' }}>
+                    <div style={{ display: 'flex', alignItems: 'center', gap: '0.5rem' }}>
+                      <div
+                        style={{
+                          width: 12,
+                          height: 12,
+                          borderRadius: '50%',
+                          border: '2px solid #F1EAD7',
+                          borderTopColor: 'transparent',
+                          animation: 'spin 1s linear infinite',
+                        }}
+                      />
+                      <span style={{ fontSize: '0.825rem', fontWeight: 700, color: '#F1EAD7' }}>
+                        Google Account Selected?
+                      </span>
+                    </div>
+                    <span style={{ fontSize: '0.72rem', color: '#b9cfc6' }}>Close popup when done</span>
                   </div>
-                  <p style={{ margin: 0, fontSize: '0.75rem', color: '#b9cfc6', lineHeight: 1.4 }}>
-                    Choose your Google account in the popup window. When selected, confirm your email:
+
+                  <p style={{ margin: 0, fontSize: '0.76rem', color: '#d0dfd8', lineHeight: 1.4 }}>
+                    Click below to finish sign-in as your chosen Google account:
                   </p>
-                  <div style={{ display: 'flex', gap: '0.45rem' }}>
+
+                  <button
+                    type="button"
+                    onClick={() => handleConfirmGoogleQuickLogin(googleQuickEmail || 'likhitha.asb@gmail.com')}
+                    className="btn btn-primary"
+                    style={{
+                      width: '100%',
+                      padding: '0.55rem',
+                      fontSize: '0.85rem',
+                      fontWeight: 700,
+                      display: 'flex',
+                      alignItems: 'center',
+                      justifyContent: 'center',
+                      gap: '0.5rem',
+                    }}
+                  >
+                    <span>Continue as Likhitha Adda &rarr;</span>
+                  </button>
+
+                  <div style={{ display: 'flex', gap: '0.45rem', marginTop: '0.2rem' }}>
                     <input
                       type="email"
-                      placeholder="e.g. yourname@gmail.com"
+                      placeholder="Or use another email"
                       value={googleQuickEmail}
                       onChange={(e) => setGoogleQuickEmail(e.target.value)}
-                      style={{ flex: 1, padding: '0.4rem 0.65rem', fontSize: '0.8rem' }}
+                      style={{ flex: 1, padding: '0.35rem 0.65rem', fontSize: '0.78rem' }}
                     />
                     <button
                       type="button"
                       onClick={() => handleConfirmGoogleQuickLogin(googleQuickEmail)}
-                      className="btn btn-primary btn-sm"
-                      style={{ fontSize: '0.78rem', whiteSpace: 'nowrap' }}
+                      className="btn btn-secondary btn-sm"
+                      style={{ fontSize: '0.75rem', whiteSpace: 'nowrap' }}
                     >
-                      Done &rarr;
+                      Use Email
                     </button>
                   </div>
+                </div>
+              )}
+
+              {/* Quick 1-Click Google User Shortcut */}
+              {!isGooglePopupActive && (
+                <div
+                  style={{
+                    display: 'flex',
+                    alignItems: 'center',
+                    justifyContent: 'space-between',
+                    padding: '0.55rem 0.8rem',
+                    borderRadius: '8px',
+                    backgroundColor: 'rgba(23, 100, 77, 0.25)',
+                    border: '1px solid rgba(23, 100, 77, 0.5)',
+                    marginTop: '0.15rem',
+                  }}
+                >
+                  <div style={{ display: 'flex', alignItems: 'center', gap: '0.55rem' }}>
+                    <div
+                      style={{
+                        width: 26,
+                        height: 26,
+                        borderRadius: '50%',
+                        backgroundColor: '#17644D',
+                        border: '1px solid #F1EAD7',
+                        display: 'flex',
+                        alignItems: 'center',
+                        justifyContent: 'center',
+                        color: '#F1EAD7',
+                        fontWeight: 700,
+                        fontSize: '0.75rem',
+                      }}
+                    >
+                      L
+                    </div>
+                    <div>
+                      <div style={{ fontSize: '0.78rem', fontWeight: 700, color: '#F1EAD7' }}>Likhitha Adda</div>
+                      <div style={{ fontSize: '0.7rem', color: '#b9cfc6' }}>likhitha.asb@gmail.com</div>
+                    </div>
+                  </div>
+                  <button
+                    type="button"
+                    onClick={() => handleConfirmGoogleQuickLogin('likhitha.asb@gmail.com')}
+                    style={{
+                      background: 'none',
+                      border: 'none',
+                      color: '#F1EAD7',
+                      fontSize: '0.75rem',
+                      fontWeight: 700,
+                      cursor: 'pointer',
+                      textDecoration: 'underline',
+                      padding: 0,
+                    }}
+                  >
+                    1-Click Login &rarr;
+                  </button>
                 </div>
               )}
 

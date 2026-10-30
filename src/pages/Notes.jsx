@@ -2,9 +2,13 @@ import React, { useState, useMemo } from 'react';
 import { useApp } from '../context/AppContext';
 import NoteCard from '../components/notes/NoteCard';
 import NoteEditorModal from '../components/notes/NoteEditorModal';
+import NoteShareModal from '../components/notes/NoteShareModal';
+import WhatsAppImportModal from '../components/notes/WhatsAppImportModal';
+import NoteExportModal from '../components/notes/NoteExportModal';
 import ConfirmDialog from '../components/common/ConfirmDialog';
 import EmptyState from '../components/common/EmptyState';
-import { FileText, Plus, Search, Pin } from 'lucide-react';
+import { FileText, Plus, Search, Pin, Upload } from 'lucide-react';
+import { shareNoteToWhatsApp } from '../utils/shareUtils';
 
 const Notes = () => {
   const { notes, addNote, updateNote, deleteNote, togglePinNote } = useApp();
@@ -13,8 +17,11 @@ const Notes = () => {
   const [subjectFilter, setSubjectFilter] = useState('ALL');
 
   const [isEditorOpen, setIsEditorOpen] = useState(false);
+  const [isImportModalOpen, setIsImportModalOpen] = useState(false);
   const [editingNote, setEditingNote] = useState(null);
   const [noteToDelete, setNoteToDelete] = useState(null);
+  const [sharingNote, setSharingNote] = useState(null);
+  const [exportingNote, setExportingNote] = useState(null);
 
   // Distinct subjects
   const uniqueSubjects = useMemo(() => {
@@ -56,15 +63,31 @@ const Notes = () => {
             Organize subject summaries, lecture formulas, and quick revision cheatsheets.
           </p>
         </div>
-        <button
-          onClick={() => {
-            setEditingNote(null);
-            setIsEditorOpen(true);
-          }}
-          className="btn btn-primary"
-        >
-          <Plus size={18} /> New Note
-        </button>
+        <div style={{ display: 'flex', alignItems: 'center', gap: '0.65rem', flexWrap: 'wrap' }}>
+          <button
+            onClick={() => setIsImportModalOpen(true)}
+            className="btn btn-outline"
+            style={{
+              borderColor: 'rgba(37, 211, 102, 0.4)',
+              color: 'var(--text-primary)',
+              display: 'flex',
+              alignItems: 'center',
+              gap: '0.45rem',
+            }}
+          >
+            <Upload size={16} color="#25D366" />
+            <span>Import from WhatsApp / Doc</span>
+          </button>
+          <button
+            onClick={() => {
+              setEditingNote(null);
+              setIsEditorOpen(true);
+            }}
+            className="btn btn-primary"
+          >
+            <Plus size={18} /> New Note
+          </button>
+        </div>
       </div>
 
       {/* Search and Filters */}
@@ -165,6 +188,9 @@ const Notes = () => {
                       setIsEditorOpen(true);
                     }}
                     onDelete={(n) => setNoteToDelete(n)}
+                    onWhatsApp={(n) => shareNoteToWhatsApp(n)}
+                    onShareModal={(n) => setSharingNote(n)}
+                    onExport={(n) => setExportingNote(n)}
                   />
                 ))}
               </div>
@@ -203,6 +229,9 @@ const Notes = () => {
                       setIsEditorOpen(true);
                     }}
                     onDelete={(n) => setNoteToDelete(n)}
+                    onWhatsApp={(n) => shareNoteToWhatsApp(n)}
+                    onShareModal={(n) => setSharingNote(n)}
+                    onExport={(n) => setExportingNote(n)}
                   />
                 ))}
               </div>
@@ -221,6 +250,31 @@ const Notes = () => {
         onSave={handleSaveNote}
         noteToEdit={editingNote}
         existingSubjects={uniqueSubjects}
+      />
+
+      {/* Share Note Modal */}
+      <NoteShareModal
+        isOpen={Boolean(sharingNote)}
+        note={sharingNote}
+        onClose={() => setSharingNote(null)}
+      />
+
+      {/* WhatsApp & Document Import Modal */}
+      <WhatsAppImportModal
+        isOpen={isImportModalOpen}
+        onClose={() => setIsImportModalOpen(false)}
+        onImportNote={(noteData) => {
+          addNote(noteData);
+          setIsImportModalOpen(false);
+        }}
+        existingSubjects={uniqueSubjects}
+      />
+
+      {/* Convert & Export Modal (PDF / Word .doc / Text) */}
+      <NoteExportModal
+        isOpen={Boolean(exportingNote)}
+        note={exportingNote}
+        onClose={() => setExportingNote(null)}
       />
 
       {/* Delete Confirmation */}

@@ -14,6 +14,7 @@ import {
   ChevronLeft,
   ChevronRight,
   BookOpen,
+  Sparkles,
 } from 'lucide-react';
 
 const Sidebar = ({ isCollapsed, setIsCollapsed, isMobileOpen, setIsMobileOpen }) => {
@@ -32,6 +33,7 @@ const Sidebar = ({ isCollapsed, setIsCollapsed, isMobileOpen, setIsMobileOpen })
     { name: 'Timetable', path: '/timetable', icon: CalendarDays },
     { name: 'Exams', path: '/exams', icon: GraduationCap },
     { name: 'Notes', path: '/notes', icon: FileText },
+    { name: 'AI Copilot', path: '/ai', icon: Sparkles, badge: 'AI', badgeColor: '#10b981' },
     { name: 'Attendance', path: '/attendance', icon: Percent, badge: lowAttendanceCount > 0 ? '!' : null, badgeColor: 'var(--warning)' },
     { name: 'Study Planner', path: '/study-planner', icon: Timer },
     { name: 'Career Studio', path: '/career', icon: Briefcase },

@@ -16,7 +16,7 @@ const GoogleAuthModal = ({
   isOpen,
   onClose,
   onGoogleSuccess,
-  storedClientId = '',
+  storedClientId = '425321763050-n40294opaqrtumasvn4iai6r9oa529fu.apps.googleusercontent.com',
   onSaveClientId,
 }) => {
   const [activeTab, setActiveTab] = useState('direct'); // 'direct' | 'oauth'

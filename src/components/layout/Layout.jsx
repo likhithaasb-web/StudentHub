@@ -5,13 +5,14 @@ import Navbar from './Navbar';
 import MobileNav from './MobileNav';
 import GlobalSearchModal from '../common/GlobalSearchModal';
 import QuickActionModal from '../common/QuickActionModal';
+import PrivacyLockModal from '../common/PrivacyLockModal';
 import { useApp } from '../../context/AppContext';
 
 const Layout = () => {
   const [isCollapsed, setIsCollapsed] = useState(false);
   const [isMobileOpen, setIsMobileOpen] = useState(false);
   const [isMobileScreen, setIsMobileScreen] = useState(window.innerWidth <= 768);
-  const { setSearchModalOpen } = useApp();
+  const { setSearchModalOpen, lockScreen, settings } = useApp();
 
   useEffect(() => {
     const handleResize = () => {
@@ -27,6 +28,13 @@ const Layout = () => {
       if ((e.metaKey || e.ctrlKey) && e.key === 'k') {
         e.preventDefault();
         setSearchModalOpen((prev) => !prev);
+      }
+      // Ctrl/Cmd + Shift + L to lock screen instantly
+      if ((e.metaKey || e.ctrlKey) && e.shiftKey && (e.key === 'L' || e.key === 'l')) {
+        if (settings?.privacyPin) {
+          e.preventDefault();
+          lockScreen();
+        }
       }
     };
 
@@ -73,6 +81,7 @@ const Layout = () => {
 
       <GlobalSearchModal />
       <QuickActionModal />
+      <PrivacyLockModal />
     </div>
   );
 };
