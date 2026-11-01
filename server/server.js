@@ -14,6 +14,7 @@ import noteRoutes from './routes/notes.js';
 import studySessionRoutes from './routes/studySessions.js';
 import resumeRoutes from './routes/resumes.js';
 import aiRoutes from './routes/ai.js';
+import adminRoutes from './routes/admin.js';
 
 // Load environment variables
 dotenv.config();
@@ -39,6 +40,7 @@ app.use('/api/notes', noteRoutes);
 app.use('/api/study-sessions', studySessionRoutes);
 app.use('/api/resumes', resumeRoutes);
 app.use('/api/ai', aiRoutes);
+app.use('/api/admin', adminRoutes);
 
 // Health check endpoint
 app.get('/api/health', (req, res) => {

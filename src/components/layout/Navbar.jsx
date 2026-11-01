@@ -15,6 +15,7 @@ import {
   ExternalLink,
   BookOpen,
   LogOut,
+  Shield,
 } from 'lucide-react';
 
 const PAGE_TITLES = {
@@ -38,6 +39,7 @@ const Navbar = ({ isCollapsed, setIsMobileOpen }) => {
     toggleTheme,
     settings,
     logout,
+    switchRole,
     notifications,
     dismissNotification,
     clearAllNotifications,
@@ -351,6 +353,31 @@ const Navbar = ({ isCollapsed, setIsMobileOpen }) => {
           )}
         </div>
 
+        {/* Quick Switch to Admin Portal */}
+        <button
+          onClick={() => {
+            switchRole('superadmin');
+            navigate('/admin');
+          }}
+          style={{
+            display: 'flex',
+            alignItems: 'center',
+            gap: '6px',
+            padding: '6px 12px',
+            borderRadius: '8px',
+            backgroundColor: 'rgba(33, 166, 122, 0.15)',
+            border: '1px solid rgba(33, 166, 122, 0.3)',
+            color: 'var(--primary)',
+            fontSize: '12px',
+            fontWeight: 600,
+            cursor: 'pointer',
+          }}
+          title="Switch to College Admin Dashboard"
+        >
+          <Shield size={14} />
+          <span style={{ display: 'none', md: 'inline' }}>Admin View</span>
+        </button>
+
         {/* Theme Toggle Button */}
         <button
           onClick={toggleTheme}
@@ -430,6 +457,33 @@ const Navbar = ({ isCollapsed, setIsMobileOpen }) => {
                   {settings.collegeName || 'StudentHub'}
                 </div>
               </div>
+
+              <button
+                onClick={() => {
+                  setProfileOpen(false);
+                  switchRole('superadmin');
+                  navigate('/admin');
+                }}
+                style={{
+                  width: '100%',
+                  display: 'flex',
+                  alignItems: 'center',
+                  gap: '0.65rem',
+                  padding: '0.6rem 0.75rem',
+                  borderRadius: 'var(--radius-md)',
+                  color: 'var(--primary)',
+                  fontSize: '0.85rem',
+                  background: 'none',
+                  border: 'none',
+                  cursor: 'pointer',
+                  textAlign: 'left',
+                }}
+                onMouseEnter={(e) => (e.currentTarget.style.backgroundColor = 'var(--bg-tertiary)')}
+                onMouseLeave={(e) => (e.currentTarget.style.backgroundColor = 'transparent')}
+              >
+                <Shield size={16} />
+                <span>Admin Dashboard</span>
+              </button>
 
               <Link
                 to="/settings"

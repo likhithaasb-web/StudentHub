@@ -15,6 +15,16 @@ import {
 import { getDaysRemaining } from '../utils/dateUtils';
 import { calculateAttendancePercentage } from '../utils/attendanceUtils';
 import { resumeStorage } from '../utils/resumeStorage';
+import {
+  INITIAL_ADMIN_STUDENTS,
+  INITIAL_ADMIN_DEPARTMENTS,
+  INITIAL_ADMIN_ANNOUNCEMENTS,
+  INITIAL_ADMIN_AUDIT_LOGS,
+  INITIAL_ADMIN_FACULTY,
+  INITIAL_ADMIN_SETTINGS,
+  INITIAL_ADMIN_ASSIGNMENTS,
+  INITIAL_ADMIN_EXAMS,
+} from '../utils/initialAdminData';
 
 const AppContext = createContext(null);
 
@@ -119,6 +129,23 @@ export const AppProvider = ({ children }) => {
   // Authentication is session-scoped:
   // Fresh visits and new browser tabs ALWAYS open the Login page first.
   // We explicitly clean up any legacy persistent flag from localStorage.
+  const [userRole, setUserRole] = useState(() => {
+    try {
+      return sessionStorage.getItem('studenthub_user_role') || storage.get('userRole', 'student');
+    } catch {
+      return 'student';
+    }
+  });
+
+  const [adminStudents, setAdminStudents] = useState(() => storage.get('admin_students', INITIAL_ADMIN_STUDENTS));
+  const [adminDepartments, setAdminDepartments] = useState(() => storage.get('admin_departments', INITIAL_ADMIN_DEPARTMENTS));
+  const [adminAnnouncements, setAdminAnnouncements] = useState(() => storage.get('admin_announcements', INITIAL_ADMIN_ANNOUNCEMENTS));
+  const [adminAuditLogs, setAdminAuditLogs] = useState(() => storage.get('admin_audit_logs', INITIAL_ADMIN_AUDIT_LOGS));
+  const [adminFaculty, setAdminFaculty] = useState(() => storage.get('admin_faculty', INITIAL_ADMIN_FACULTY));
+  const [adminSettings, setAdminSettingsState] = useState(() => storage.get('admin_settings', INITIAL_ADMIN_SETTINGS));
+  const [adminAssignments, setAdminAssignments] = useState(() => storage.get('admin_assignments', INITIAL_ADMIN_ASSIGNMENTS));
+  const [adminExams, setAdminExams] = useState(() => storage.get('admin_exams', INITIAL_ADMIN_EXAMS));
+
   const [isAuthenticated, setIsAuthenticated] = useState(() => {
     try {
       localStorage.removeItem('studenthub_auth_session_active');
@@ -155,7 +182,11 @@ export const AppProvider = ({ children }) => {
       localStorage.removeItem('studenthub_auth_session_active');
     } catch {}
     if (email) {
-      updateSettings({ email });
+      setUserRole('student');
+    try {
+      sessionStorage.setItem('studenthub_user_role', 'student');
+    } catch {}
+    updateSettings({ email });
     }
     return true;
   };
@@ -165,6 +196,10 @@ export const AppProvider = ({ children }) => {
     try {
       sessionStorage.setItem('studenthub_auth_session_active', 'true');
       localStorage.removeItem('studenthub_auth_session_active');
+    } catch {}
+    setUserRole('student');
+    try {
+      sessionStorage.setItem('studenthub_user_role', 'student');
     } catch {}
     updateSettings({
       studentName: name || 'Student',
@@ -176,6 +211,10 @@ export const AppProvider = ({ children }) => {
 
   const logout = () => {
     setIsAuthenticated(false);
+    setUserRole('student');
+    try {
+      sessionStorage.removeItem('studenthub_user_role');
+    } catch {}
     try {
       sessionStorage.removeItem('studenthub_auth_session_active');
       localStorage.removeItem('studenthub_auth_session_active');
@@ -189,6 +228,10 @@ export const AppProvider = ({ children }) => {
       sessionStorage.setItem('studenthub_auth_session_active', 'true');
       localStorage.removeItem('studenthub_auth_session_active');
     } catch {}
+    setUserRole('student');
+    try {
+      sessionStorage.setItem('studenthub_user_role', 'student');
+    } catch {}
     updateSettings({
       studentName: 'Alex Morgan',
       email: 'alex@university.edu',
@@ -197,11 +240,263 @@ export const AppProvider = ({ children }) => {
     return true;
   };
 
+  const demoAdminLogin = () => {
+    setIsAuthenticated(true);
+    setUserRole('superadmin');
+    try {
+      sessionStorage.setItem('studenthub_auth_session_active', 'true');
+      sessionStorage.setItem('studenthub_user_role', 'superadmin');
+      storage.set('userRole', 'superadmin');
+    } catch {}
+    return true;
+  };
+
+  const adminLogin = (email, password) => {
+    setIsAuthenticated(true);
+    setUserRole('admin');
+    try {
+      sessionStorage.setItem('studenthub_auth_session_active', 'true');
+      sessionStorage.setItem('studenthub_user_role', 'admin');
+      storage.set('userRole', 'admin');
+    } catch {}
+    return true;
+  };
+
+  const switchRole = (newRole) => {
+    setUserRole(newRole);
+    try {
+      sessionStorage.setItem('studenthub_user_role', newRole);
+      storage.set('userRole', newRole);
+    } catch {}
+  };
+
+  const addAuditLog = (action, module, targetEntity, details, status = 'Success') => {
+    const newLog = {
+      id: generateId('log_'),
+      action,
+      module,
+      performedBy: userRole === 'superadmin' ? 'Dr. Eleanor Vance' : 'Administrator',
+      performerEmail: userRole === 'superadmin' ? 'dean.vance@studenthub.edu' : 'admin@studenthub.edu',
+      performerRole: userRole,
+      targetEntity: targetEntity || '',
+      details: details || '',
+      status,
+      timestamp: new Date().toISOString().replace('T', ' ').substring(0, 19),
+      ipAddress: '192.168.1.10',
+    };
+    setAdminAuditLogs((prev) => {
+      const updated = [newLog, ...prev];
+      storage.set('admin_audit_logs', updated);
+      return updated;
+    });
+  };
+
+  const addAdminStudent = (studentData) => {
+    const newStudent = {
+      id: generateId('std_'),
+      status: 'active',
+      joinedDate: new Date().toISOString().split('T')[0],
+      lastActive: 'Just now',
+      attendancePercentage: studentData.attendancePercentage || 85,
+      totalClasses: 112,
+      attendedClasses: Math.round(112 * ((studentData.attendancePercentage || 85) / 100)),
+      cgpa: studentData.cgpa ? Number(studentData.cgpa) : 8.5,
+      degree: 'B.Tech / B.E.',
+      academicYear: '3rd Year',
+      semester: 'Semester 6',
+      ...studentData,
+    };
+    setAdminStudents((prev) => {
+      const updated = [newStudent, ...prev];
+      storage.set('admin_students', updated);
+      return updated;
+    });
+    addAuditLog('Create Student Account', 'Students', newStudent.email, `Created student account for ${newStudent.name} (${newStudent.rollNumber}).`);
+    return newStudent;
+  };
+
+  const updateAdminStudent = (id, studentData) => {
+    setAdminStudents((prev) => {
+      const updated = prev.map((s) => (s.id === id ? { ...s, ...studentData } : s));
+      storage.set('admin_students', updated);
+      return updated;
+    });
+    addAuditLog('Update Student Profile', 'Students', studentData.email || id, `Updated student profile information.`);
+  };
+
+  const toggleStudentStatus = (id) => {
+    setAdminStudents((prev) => {
+      const updated = prev.map((s) => {
+        if (s.id === id) {
+          const nextStatus = s.status === 'active' ? 'suspended' : 'active';
+          addAuditLog(`Change Student Status to ${nextStatus}`, 'Students', s.rollNumber || s.email, `Account status changed to ${nextStatus} for ${s.name}.`);
+          return { ...s, status: nextStatus };
+        }
+        return s;
+      });
+      storage.set('admin_students', updated);
+      return updated;
+    });
+  };
+
+  const deleteAdminStudent = (id) => {
+    setAdminStudents((prev) => {
+      const target = prev.find((s) => s.id === id);
+      if (target) {
+        addAuditLog('Delete Student Account', 'Students', target.email, `Removed student ${target.name} (${target.rollNumber}).`, 'Warning');
+      }
+      const updated = prev.filter((s) => s.id !== id);
+      storage.set('admin_students', updated);
+      return updated;
+    });
+  };
+
+  const addDepartment = (dept) => {
+    const newDept = {
+      id: generateId('dept_'),
+      activeStudents: 0,
+      facultyCount: 0,
+      subjects: [],
+      ...dept,
+    };
+    setAdminDepartments((prev) => {
+      const updated = [...prev, newDept];
+      storage.set('admin_departments', updated);
+      return updated;
+    });
+    addAuditLog('Create Department', 'Academics', newDept.code, `Created department ${newDept.name} (${newDept.code}).`);
+    return newDept;
+  };
+
+  const updateDepartment = (id, deptData) => {
+    setAdminDepartments((prev) => {
+      const updated = prev.map((d) => (d.id === id ? { ...d, ...deptData } : d));
+      storage.set('admin_departments', updated);
+      return updated;
+    });
+    addAuditLog('Update Department', 'Academics', deptData.code || id, `Updated department curriculum/details.`);
+  };
+
+  const addAnnouncement = (annData) => {
+    const newAnn = {
+      id: generateId('ann_'),
+      date: new Date().toISOString().split('T')[0],
+      publishedBy: userRole === 'superadmin' ? 'Dr. Eleanor Vance (Academic Dean)' : 'College Administration',
+      isPinned: false,
+      ...annData,
+    };
+    setAdminAnnouncements((prev) => {
+      const updated = [newAnn, ...prev];
+      storage.set('admin_announcements', updated);
+      return updated;
+    });
+    addAuditLog('Publish Circular', 'Announcements', newAnn.title, `Published institutional announcement for ${newAnn.targetAudience}.`);
+    return newAnn;
+  };
+
+  const deleteAnnouncement = (id) => {
+    setAdminAnnouncements((prev) => {
+      const target = prev.find((a) => a.id === id);
+      if (target) {
+        addAuditLog('Delete Circular', 'Announcements', target.title, `Removed circular "${target.title}".`, 'Warning');
+      }
+      const updated = prev.filter((a) => a.id !== id);
+      storage.set('admin_announcements', updated);
+      return updated;
+    });
+  };
+
+  const updateAdminSettings = (newSettings) => {
+    setAdminSettingsState((prev) => {
+      const updated = { ...prev, ...newSettings };
+      storage.set('admin_settings', updated);
+      return updated;
+    });
+    addAuditLog('Update Platform Configuration', 'Settings', 'Global Configuration', `Updated platform thresholds and institution parameters.`);
+  };
+
+  const addAdminAssignment = (asgData) => {
+    const newAsg = {
+      id: generateId('asg_'),
+      submissionsCount: 0,
+      totalStudents: 120,
+      status: 'active',
+      publishedBy: userRole === 'superadmin' ? 'Dr. Eleanor Vance' : 'Course Faculty',
+      ...asgData,
+    };
+    setAdminAssignments((prev) => {
+      const updated = [newAsg, ...prev];
+      storage.set('admin_assignments', updated);
+      return updated;
+    });
+    addAuditLog('Broadcast Assignment', 'Assignments', newAsg.courseCode, `Published assignment "${newAsg.title}" for ${newAsg.department}.`);
+    return newAsg;
+  };
+
+  const addAdminExam = (examData) => {
+    const newExam = {
+      id: generateId('adm_ex_'),
+      status: 'Scheduled',
+      totalCandidates: 120,
+      maxMarks: 100,
+      ...examData,
+    };
+    setAdminExams((prev) => {
+      const updated = [newExam, ...prev];
+      storage.set('admin_exams', updated);
+      return updated;
+    });
+    addAuditLog('Schedule Examination', 'Exams', newExam.code, `Created exam schedule for ${newExam.subject} (${newExam.code}) at ${newExam.venue}.`);
+    return newExam;
+  };
+
+  const deleteAdminExam = (id) => {
+    setAdminExams((prev) => {
+      const target = prev.find((e) => e.id === id);
+      if (target) {
+        addAuditLog('Cancel Examination', 'Exams', target.code, `Cancelled exam for ${target.subject}.`, 'Warning');
+      }
+      const updated = prev.filter((e) => e.id !== id);
+      storage.set('admin_exams', updated);
+      return updated;
+    });
+  };
+
+  const addAdminFaculty = (facultyData) => {
+    const newFaculty = {
+      id: generateId('adm_'),
+      status: 'active',
+      lastLogin: 'Never',
+      permissions: ['manage:academics', 'manage:attendance', 'manage:assignments'],
+      ...facultyData,
+    };
+    setAdminFaculty((prev) => {
+      const updated = [...prev, newFaculty];
+      storage.set('admin_faculty', updated);
+      return updated;
+    });
+    addAuditLog('Add Faculty / Administrator', 'Admins', newFaculty.email, `Granted ${newFaculty.role} access to ${newFaculty.name}.`);
+    return newFaculty;
+  };
+
+  const updateAdminRole = (id, role, permissions) => {
+    setAdminFaculty((prev) => {
+      const updated = prev.map((f) => (f.id === id ? { ...f, role, permissions: permissions || f.permissions } : f));
+      storage.set('admin_faculty', updated);
+      return updated;
+    });
+    addAuditLog('Modify Admin Privileges', 'Admins', id, `Updated role to ${role}.`);
+  };
+
   const loginWithGoogle = ({ name, email, avatar, college }) => {
     setIsAuthenticated(true);
     try {
       sessionStorage.setItem('studenthub_auth_session_active', 'true');
       localStorage.removeItem('studenthub_auth_session_active');
+    } catch {}
+    setUserRole('student');
+    try {
+      sessionStorage.setItem('studenthub_user_role', 'student');
     } catch {}
     updateSettings({
       studentName: name || 'Google User',
@@ -1143,6 +1438,33 @@ export const AppProvider = ({ children }) => {
         signup,
         demoLogin,
         loginWithGoogle,
+        userRole,
+        switchRole,
+        demoAdminLogin,
+        adminLogin,
+        adminStudents,
+        addAdminStudent,
+        updateAdminStudent,
+        toggleStudentStatus,
+        deleteAdminStudent,
+        adminDepartments,
+        addDepartment,
+        updateDepartment,
+        adminAnnouncements,
+        addAnnouncement,
+        deleteAnnouncement,
+        adminAuditLogs,
+        addAuditLog,
+        adminFaculty,
+        addAdminFaculty,
+        updateAdminRole,
+        adminSettings,
+        updateAdminSettings,
+        adminAssignments,
+        addAdminAssignment,
+        adminExams,
+        addAdminExam,
+        deleteAdminExam,
         tasks,
         addTask,
         updateTask,

@@ -24,10 +24,15 @@ import {
   Timer,
   Settings,
   Sparkles,
+  Shield,
+  ArrowLeftRight,
 } from 'lucide-react';
 
 const Login = () => {
-  const { login, signup, demoLogin, loginWithGoogle, theme } = useApp();
+  const { login, signup, demoLogin, demoAdminLogin, loginWithGoogle, theme } = useApp();
+  const queryParams = typeof window !== 'undefined' ? new URLSearchParams(window.location.search) : null;
+  const initialPortal = queryParams?.get('portal') === 'admin' ? 'admin' : 'student';
+  const [activePortal, setActivePortal] = useState(initialPortal);
   const navigate = useNavigate();
 
   const [isSignUp, setIsSignUp] = useState(false);
@@ -102,10 +107,18 @@ const Login = () => {
           console.warn('Backend server unavailable, proceeding with local fallback:', apiErr.message);
         }
 
-        login(formData.email, formData.password);
+        if (activePortal === 'admin') {
+          demoAdminLogin();
+        } else {
+          login(formData.email, formData.password);
+        }
       }
       setLoading(false);
-      navigate('/');
+      if (activePortal === 'admin') {
+        navigate('/admin');
+      } else {
+        navigate('/');
+      }
     } catch (err) {
       setError(err.message || 'Authentication error. Please try again.');
       setLoading(false);
@@ -299,6 +312,11 @@ const Login = () => {
 
   const handleDemoSignIn = () => {
     demoLogin();
+  };
+
+  const handleAdminDemoSignIn = () => {
+    demoAdminLogin();
+    navigate('/admin');
     navigate('/');
   };
 
@@ -700,13 +718,100 @@ const Login = () => {
               </div>
             </div>
 
+            {/* Portal Switcher Tabs: Student Portal vs Admin Portal */}
+            <div
+              style={{
+                display: 'flex',
+                backgroundColor: 'rgba(0, 0, 0, 0.25)',
+                border: '1px solid rgba(241, 234, 215, 0.15)',
+                borderRadius: '12px',
+                padding: '4px',
+                marginBottom: '1.5rem',
+                gap: '4px',
+              }}
+            >
+              <button
+                type="button"
+                onClick={() => {
+                  setActivePortal('student');
+                  setIsSignUp(false);
+                  setFormData({
+                    name: 'Alex Morgan',
+                    email: 'alex@university.edu',
+                    password: 'password123',
+                    college: 'State Tech University',
+                    rememberMe: false,
+                  });
+                }}
+                style={{
+                  flex: 1,
+                  display: 'flex',
+                  alignItems: 'center',
+                  justifyContent: 'center',
+                  gap: '6px',
+                  padding: '8px 12px',
+                  borderRadius: '8px',
+                  border: 'none',
+                  backgroundColor: activePortal === 'student' ? 'var(--primary, #21A67A)' : 'transparent',
+                  color: activePortal === 'student' ? '#FFFFFF' : '#b9cfc6',
+                  fontWeight: 600,
+                  fontSize: '0.85rem',
+                  cursor: 'pointer',
+                  transition: 'all 0.15s ease',
+                }}
+              >
+                <BookOpen size={15} /> Student Portal
+              </button>
+
+              <button
+                type="button"
+                onClick={() => {
+                  setActivePortal('admin');
+                  setIsSignUp(false);
+                  setFormData({
+                    name: 'Dr. Eleanor Vance',
+                    email: 'dean.vance@studenthub.edu',
+                    password: 'adminPassword123',
+                    college: 'StudentHub Institute of Technology',
+                    rememberMe: true,
+                  });
+                }}
+                style={{
+                  flex: 1,
+                  display: 'flex',
+                  alignItems: 'center',
+                  justifyContent: 'center',
+                  gap: '6px',
+                  padding: '8px 12px',
+                  borderRadius: '8px',
+                  border: 'none',
+                  backgroundColor: activePortal === 'admin' ? 'var(--primary, #21A67A)' : 'transparent',
+                  color: activePortal === 'admin' ? '#FFFFFF' : '#b9cfc6',
+                  fontWeight: 600,
+                  fontSize: '0.85rem',
+                  cursor: 'pointer',
+                  transition: 'all 0.15s ease',
+                }}
+              >
+                <Shield size={15} /> Admin Portal
+              </button>
+            </div>
+
             {/* Card Titles */}
             <div style={{ textAlign: 'center', marginBottom: '1.75rem' }}>
               <h2 style={{ fontSize: '1.75rem', fontWeight: 800, color: '#F7F5EC', margin: '0 0 0.35rem 0' }}>
-                {isSignUp ? 'Create account' : 'Welcome back'}
+                {activePortal === 'admin'
+                  ? 'University Administration'
+                  : isSignUp
+                  ? 'Create account'
+                  : 'Welcome back'}
               </h2>
               <p style={{ fontSize: '0.875rem', color: '#b9cfc6', margin: 0 }}>
-                {isSignUp ? 'Join StudentHub to organize your courses' : 'Sign in to continue your progress.'}
+                {activePortal === 'admin'
+                  ? 'Manage. Monitor. Empower. — Campus Governance'
+                  : isSignUp
+                  ? 'Join StudentHub to organize your courses'
+                  : 'Sign in to continue your progress.'}
               </p>
             </div>
 
@@ -1130,7 +1235,7 @@ const Login = () => {
               {/* Instant 1-Click Demo Access Button */}
               <button
                 type="button"
-                onClick={handleDemoSignIn}
+                onClick={activePortal === 'admin' ? handleAdminDemoSignIn : handleDemoSignIn}
                 style={{
                   width: '100%',
                   padding: '0.65rem',
@@ -1150,7 +1255,8 @@ const Login = () => {
                 onMouseEnter={(e) => (e.currentTarget.style.backgroundColor = 'rgba(241, 234, 215, 0.1)')}
                 onMouseLeave={(e) => (e.currentTarget.style.backgroundColor = 'transparent')}
               >
-                <Sparkles size={14} /> Instant 1-Click Demo Login
+                {activePortal === 'admin' ? <Shield size={14} /> : <Sparkles size={14} />}
+                {activePortal === 'admin' ? 'Instant 1-Click Admin Demo Login (Dr. Vance)' : 'Instant 1-Click Demo Login (Alex Morgan)'}
               </button>
             </form>
 

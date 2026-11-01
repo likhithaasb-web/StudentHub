@@ -17,6 +17,20 @@ import Settings from './pages/Settings';
 import Login from './pages/Login';
 import ErrorBoundary from './components/common/ErrorBoundary';
 
+// Admin imports
+import AdminLayout from './components/admin/AdminLayout';
+import AdminOverview from './pages/admin/AdminOverview';
+import StudentManagement from './pages/admin/StudentManagement';
+import AcademicManagement from './pages/admin/AcademicManagement';
+import AttendanceManagement from './pages/admin/AttendanceManagement';
+import AssignmentManagement from './pages/admin/AssignmentManagement';
+import ExaminationManagement from './pages/admin/ExaminationManagement';
+import AnnouncementManagement from './pages/admin/AnnouncementManagement';
+import AdminAnalytics from './pages/admin/AdminAnalytics';
+import AdminManagement from './pages/admin/AdminManagement';
+import AuditLogs from './pages/admin/AuditLogs';
+import AdminSettings from './pages/admin/AdminSettings';
+
 // Protects all dashboard routes: redirects unauthenticated users directly to /login
 const ProtectedRoute = ({ children }) => {
   const { isAuthenticated } = useApp();
@@ -26,10 +40,22 @@ const ProtectedRoute = ({ children }) => {
   return children;
 };
 
-// Redirects already authenticated users to the dashboard if they visit /login
-const PublicRoute = ({ children }) => {
+// Protects admin routes: redirects unauthenticated users to /login?portal=admin
+const AdminProtectedRoute = ({ children }) => {
   const { isAuthenticated } = useApp();
+  if (!isAuthenticated) {
+    return <Navigate to="/login?portal=admin" replace />;
+  }
+  return children;
+};
+
+// Redirects already authenticated users to their corresponding dashboard if they visit /login
+const PublicRoute = ({ children }) => {
+  const { isAuthenticated, userRole } = useApp();
   if (isAuthenticated) {
+    if (userRole === 'admin' || userRole === 'superadmin') {
+      return <Navigate to="/admin" replace />;
+    }
     return <Navigate to="/" replace />;
   }
   return children;
@@ -54,7 +80,30 @@ function AppRoutes() {
       {/* Public Shareable Note Route (Open to classmates without login) */}
       <Route path="/notes/share/:shareId" element={<PublicNote />} />
 
-      {/* Main Dashboard & Feature Pages (Protected) */}
+      {/* Completely Separate Admin Dashboard Portal */}
+      <Route
+        path="/admin"
+        element={
+          <AdminProtectedRoute>
+            <AdminLayout />
+          </AdminProtectedRoute>
+        }
+      >
+        <Route index element={<AdminOverview />} />
+        <Route path="students" element={<StudentManagement />} />
+        <Route path="academics" element={<AcademicManagement />} />
+        <Route path="attendance" element={<AttendanceManagement />} />
+        <Route path="assignments" element={<AssignmentManagement />} />
+        <Route path="exams" element={<ExaminationManagement />} />
+        <Route path="announcements" element={<AnnouncementManagement />} />
+        <Route path="analytics" element={<AdminAnalytics />} />
+        <Route path="management" element={<AdminManagement />} />
+        <Route path="audit-logs" element={<AuditLogs />} />
+        <Route path="settings" element={<AdminSettings />} />
+        <Route path="*" element={<Navigate to="/admin" replace />} />
+      </Route>
+
+      {/* Main Student Dashboard & Feature Pages (Protected) */}
       <Route
         path="/"
         element={
