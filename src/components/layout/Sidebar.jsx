@@ -1,5 +1,5 @@
 import React, { useState } from 'react';
-import { NavLink, useNavigate } from 'react-router-dom';
+import { NavLink } from 'react-router-dom';
 import { useApp } from '../../context/AppContext';
 import {
   LayoutDashboard,
@@ -15,12 +15,10 @@ import {
   ChevronRight,
   BookOpen,
   Sparkles,
-  Shield,
 } from 'lucide-react';
 
 const Sidebar = ({ isCollapsed, setIsCollapsed, isMobileOpen, setIsMobileOpen }) => {
-  const { tasks, attendance, settings, notifications, switchRole } = useApp();
-  const navigate = useNavigate();
+  const { tasks, attendance, settings, notifications } = useApp();
 
   const pendingTasksCount = tasks.filter((t) => t.status !== 'Completed').length;
   const target = settings.targetAttendance || 75;
@@ -162,6 +160,7 @@ const Sidebar = ({ isCollapsed, setIsCollapsed, isMobileOpen, setIsMobileOpen })
             display: 'flex',
             flexDirection: 'column',
             gap: '0.35rem',
+            minHeight: 0,
             overflowY: 'auto',
           }}
         >
@@ -258,35 +257,6 @@ const Sidebar = ({ isCollapsed, setIsCollapsed, isMobileOpen, setIsMobileOpen })
             </button>
           </div>
         )}
-
-        {/* Switch to Admin Dashboard */}
-        <div style={{ padding: isCollapsed ? '0.5rem 0.4rem' : '0.5rem 0.75rem', borderTop: '1px solid var(--border-subtle)' }}>
-          <button
-            onClick={() => {
-              switchRole('superadmin');
-              navigate('/admin');
-            }}
-            style={{
-              width: '100%',
-              display: 'flex',
-              alignItems: 'center',
-              justifyContent: isCollapsed ? 'center' : 'flex-start',
-              gap: '10px',
-              padding: isCollapsed ? '8px' : '8px 12px',
-              borderRadius: '8px',
-              border: '1px solid rgba(33, 166, 122, 0.3)',
-              backgroundColor: 'rgba(33, 166, 122, 0.1)',
-              color: 'var(--primary)',
-              fontSize: '12px',
-              fontWeight: 600,
-              cursor: 'pointer',
-            }}
-            title="Switch to Administration"
-          >
-            <Shield size={16} />
-            {!isCollapsed && <span>Admin Portal</span>}
-          </button>
-        </div>
 
         {/* User Mini Profile Footer */}
         <div

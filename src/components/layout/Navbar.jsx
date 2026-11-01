@@ -353,31 +353,6 @@ const Navbar = ({ isCollapsed, setIsMobileOpen }) => {
           )}
         </div>
 
-        {/* Quick Switch to Admin Portal */}
-        <button
-          onClick={() => {
-            switchRole('superadmin');
-            navigate('/admin');
-          }}
-          style={{
-            display: 'flex',
-            alignItems: 'center',
-            gap: '6px',
-            padding: '6px 12px',
-            borderRadius: '8px',
-            backgroundColor: 'rgba(33, 166, 122, 0.15)',
-            border: '1px solid rgba(33, 166, 122, 0.3)',
-            color: 'var(--primary)',
-            fontSize: '12px',
-            fontWeight: 600,
-            cursor: 'pointer',
-          }}
-          title="Switch to College Admin Dashboard"
-        >
-          <Shield size={14} />
-          <span style={{ display: 'none', md: 'inline' }}>Admin View</span>
-        </button>
-
         {/* Theme Toggle Button */}
         <button
           onClick={toggleTheme}
