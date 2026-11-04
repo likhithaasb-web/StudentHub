@@ -141,7 +141,7 @@ const AdminLayout = () => {
           style={{
             flex: 1,
             padding: '24px 32px 48px 32px',
-            maxWidth: '1600px',
+            maxWidth: '100%',
             width: '100%',
             margin: '0 auto',
             boxSizing: 'border-box',

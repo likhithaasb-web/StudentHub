@@ -337,7 +337,9 @@ const AdminSettings = () => {
             <div style={{ padding: '14px', borderRadius: '10px', backgroundColor: 'var(--bg-secondary)', border: '1px solid var(--border-subtle)' }}>
               <div style={{ fontSize: '11px', color: 'var(--text-muted)' }}>Backend Host</div>
               <div style={{ fontSize: '13px', fontWeight: 600, color: 'var(--text-primary)', marginTop: '4px', fontFamily: 'monospace' }}>
-                http://localhost:5000/api
+                {typeof window !== 'undefined'
+                  ? (import.meta.env.VITE_API_URL || (import.meta.env.PROD ? `${window.location.origin}/api` : 'http://localhost:5000/api'))
+                  : 'http://localhost:5000/api'}
               </div>
             </div>
 

@@ -9,7 +9,9 @@
     "build": "vite build",
     "preview": "vite preview",
     "server": "node server/server.js",
-    "server:dev": "node --watch server/server.js"
+    "server:dev": "node --watch server/server.js",
+    "render-build": "npm install && npm --prefix server install && npm run build",
+    "start": "node server/server.js"
   },
   "dependencies": {
     "lucide-react": "^0.468.0",

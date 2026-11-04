@@ -16,6 +16,8 @@ import {
   BookOpen,
   LogOut,
   Shield,
+  Maximize2,
+  Minimize2,
 } from 'lucide-react';
 
 const PAGE_TITLES = {
@@ -52,6 +54,23 @@ const Navbar = ({ isCollapsed, setIsMobileOpen }) => {
 
   const notifRef = useRef(null);
   const profileRef = useRef(null);
+  const [isFullscreen, setIsFullscreen] = useState(false);
+
+  useEffect(() => {
+    const handleFullscreenChange = () => {
+      setIsFullscreen(!!document.fullscreenElement);
+    };
+    document.addEventListener('fullscreenchange', handleFullscreenChange);
+    return () => document.removeEventListener('fullscreenchange', handleFullscreenChange);
+  }, []);
+
+  const toggleFullscreen = () => {
+    if (!document.fullscreenElement) {
+      document.documentElement.requestFullscreen().catch(() => {});
+    } else {
+      document.exitFullscreen().catch(() => {});
+    }
+  };
 
   const currentTitle = PAGE_TITLES[location.pathname] || 'StudentHub';
 
@@ -365,6 +384,20 @@ const Navbar = ({ isCollapsed, setIsMobileOpen }) => {
           aria-label="Toggle color theme"
         >
           {theme === 'dark' ? <Sun size={18} /> : <Moon size={18} />}
+        </button>
+
+        {/* Maximize to Full Screen */}
+        <button
+          onClick={toggleFullscreen}
+          className="btn-icon"
+          style={{
+            backgroundColor: 'var(--bg-tertiary)',
+            color: 'var(--text-secondary)',
+          }}
+          title={isFullscreen ? 'Exit Full Screen' : 'Maximize to Full Screen (F11)'}
+          aria-label="Toggle Full Screen"
+        >
+          {isFullscreen ? <Minimize2 size={18} /> : <Maximize2 size={18} />}
         </button>
 
         {/* Profile Menu Dropdown */}

@@ -15,6 +15,8 @@ import {
   Shield,
   LogOut,
   ExternalLink,
+  Maximize2,
+  Minimize2,
 } from 'lucide-react';
 
 const AdminHeader = ({ isCollapsed, setIsCollapsed, isMobileOpen, setIsMobileOpen }) => {
@@ -25,6 +27,23 @@ const AdminHeader = ({ isCollapsed, setIsCollapsed, isMobileOpen, setIsMobileOpe
   const [showNotifications, setShowNotifications] = useState(false);
   const [showProfileMenu, setShowProfileMenu] = useState(false);
   const [searchQuery, setSearchQuery] = useState('');
+  const [isFullscreen, setIsFullscreen] = useState(false);
+
+  React.useEffect(() => {
+    const handleFullscreenChange = () => {
+      setIsFullscreen(!!document.fullscreenElement);
+    };
+    document.addEventListener('fullscreenchange', handleFullscreenChange);
+    return () => document.removeEventListener('fullscreenchange', handleFullscreenChange);
+  }, []);
+
+  const toggleFullscreen = () => {
+    if (!document.fullscreenElement) {
+      document.documentElement.requestFullscreen().catch(() => {});
+    } else {
+      document.exitFullscreen().catch(() => {});
+    }
+  };
 
   // Determine current page title
   const getPageTitle = () => {
@@ -220,6 +239,26 @@ const AdminHeader = ({ isCollapsed, setIsCollapsed, isMobileOpen, setIsMobileOpe
           title={theme === 'dark' ? 'Switch to Light Mode' : 'Switch to Dark Mode'}
         >
           {theme === 'dark' ? <Sun size={17} /> : <Moon size={17} />}
+        </button>
+
+        {/* Maximize to Full Screen */}
+        <button
+          onClick={toggleFullscreen}
+          style={{
+            background: 'none',
+            border: '1px solid var(--border-subtle)',
+            color: 'var(--text-primary)',
+            cursor: 'pointer',
+            padding: '8px',
+            borderRadius: '8px',
+            display: 'flex',
+            alignItems: 'center',
+            justifyContent: 'center',
+          }}
+          title={isFullscreen ? 'Exit Full Screen' : 'Maximize to Full Screen (F11)'}
+          aria-label="Toggle Full Screen"
+        >
+          {isFullscreen ? <Minimize2 size={17} /> : <Maximize2 size={17} />}
         </button>
 
         {/* Notifications Popover */}

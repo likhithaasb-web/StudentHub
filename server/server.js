@@ -2,6 +2,9 @@ import express from 'express';
 import cors from 'cors';
 import dotenv from 'dotenv';
 import mongoose from 'mongoose';
+import path from 'path';
+import { fileURLToPath } from 'url';
+import fs from 'fs';
 import { connectDB } from './config/db.js';
 
 // Route imports
@@ -18,6 +21,9 @@ import adminRoutes from './routes/admin.js';
 
 // Load environment variables
 dotenv.config();
+
+const __filename = fileURLToPath(import.meta.url);
+const __dirname = path.dirname(__filename);
 
 const app = express();
 const PORT = process.env.PORT || 5000;
@@ -53,10 +59,24 @@ app.get('/api/health', (req, res) => {
   });
 });
 
-// Root check
-app.get('/', (req, res) => {
-  res.send('StudentHub API Server is running. Visit /api/health for system status.');
-});
+// Serve static frontend in production if dist/ folder exists
+const distPath = path.resolve(__dirname, '../dist');
+if (fs.existsSync(distPath)) {
+  app.use(express.static(distPath));
+
+  // SPA fallback for all non-API GET requests (handles client-side routes like /tasks, /admin, etc.)
+  app.get('*', (req, res, next) => {
+    if (req.path.startsWith('/api')) {
+      return next();
+    }
+    res.sendFile(path.join(distPath, 'index.html'));
+  });
+} else {
+  // Fallback when backend is run standalone without frontend build
+  app.get('/', (req, res) => {
+    res.send('StudentHub API Server is running. Frontend build not found. Run `npm run build` to generate the client UI.');
+  });
+}
 
 // Start Server
 app.listen(PORT, () => {
