@@ -10,6 +10,7 @@ import Exam from '../models/Exam.js';
 import Note from '../models/Note.js';
 import StudySession from '../models/StudySession.js';
 import Resume from '../models/Resume.js';
+import AuditLog from '../models/AuditLog.js';
 import { authMiddleware } from '../middleware/auth.js';
 import { seedDemoDataForUser } from '../utils/seedDemoData.js';
 
@@ -96,6 +97,28 @@ router.post('/login', async (req, res) => {
       return res.status(400).json({ message: 'Invalid email or password.' });
     }
 
+    user.lastActive = new Date();
+    await user.save();
+
+    // Log admin or privileged login to AuditLog
+    if (user.role === 'admin' || user.role === 'superadmin') {
+      try {
+        await AuditLog.create({
+          action: 'Administrator Login',
+          module: 'Auth',
+          performedBy: user.name,
+          performerEmail: user.email,
+          performerRole: user.role,
+          targetEntity: 'System Dashboard',
+          details: `Administrator ${user.name} logged into StudentHub.`,
+          status: 'Success',
+          ipAddress: req.ip || req.headers['x-forwarded-for'] || '127.0.0.1',
+        });
+      } catch (logErr) {
+        console.warn('Audit log write error:', logErr.message);
+      }
+    }
+
     const token = signToken(user._id, user.role || 'student');
 
     return res.json({
@@ -150,6 +173,8 @@ router.post('/google', async (req, res) => {
       if (taskCount === 0) {
         await seedDemoDataForUser(user._id);
       }
+      user.lastActive = new Date();
+      await user.save();
     }
 
     const token = signToken(user._id, user.role || 'student');
